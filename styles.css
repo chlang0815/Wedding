@@ -1,3 +1,7 @@
+/* ==========================================================================
+   Design tokens and local fonts
+   ========================================================================== */
+
 @font-face {
   font-family: "Amsterdam Four";
   src: url("assets/fonts/amsterdam-four.ttf") format("truetype");
@@ -21,6 +25,10 @@
   --script: "Allura", "Segoe Script", cursive;
   --opening-time: 1.4s;
 }
+
+/* ==========================================================================
+   Document foundation
+   ========================================================================== */
 
 * {
   box-sizing: border-box;
@@ -59,6 +67,8 @@ button {
   font: inherit;
 }
 
+/* Ambient page texture and accessibility helpers */
+
 .paper-grain {
   position: fixed;
   inset: 0;
@@ -79,6 +89,8 @@ button {
   white-space: nowrap;
   border: 0;
 }
+
+/* Invalid or missing invitation link */
 
 .access-error {
   min-height: 100svh;
@@ -117,6 +129,8 @@ button {
   font-size: 1.05rem;
 }
 
+/* Page chrome around the invitation */
+
 .experience {
   min-height: 100svh;
   display: grid;
@@ -147,6 +161,10 @@ button {
   font-size: clamp(0.67rem, 1vw, 0.78rem);
   white-space: nowrap;
 }
+
+/* ==========================================================================
+   Book and cover
+   ========================================================================== */
 
 .invitation-stage {
   width: 100%;
@@ -207,20 +225,6 @@ button {
   color: var(--terracotta);
   font-size: 0.6em;
   font-style: normal;
-}
-
-.inside-date {
-  position: absolute;
-  top: 29%;
-  left: 0;
-  width: 100%;
-  margin: 0;
-  color: var(--green);
-  font-size: clamp(0.55rem, 1.2vw, 0.88rem);
-  letter-spacing: 0.2em;
-  text-align: center;
-  text-transform: uppercase;
-  opacity: 0.38;
 }
 
 .cover {
@@ -296,22 +300,6 @@ button {
   letter-spacing: 0.2em;
 }
 
-.open-prompt {
-  position: absolute;
-  right: 1.4rem;
-  bottom: 1rem;
-  color: var(--green);
-  font-size: 0.66rem;
-  letter-spacing: 0.13em;
-  opacity: 0;
-  text-transform: uppercase;
-  transition: opacity 0.4s ease 1.6s;
-}
-
-.book.is-closed .open-prompt {
-  opacity: 0.6;
-}
-
 .cover-back {
   transform: rotateY(180deg);
   background: var(--envelope-texture), var(--envelope-paper);
@@ -319,22 +307,9 @@ button {
   box-shadow: inset -1rem 0 1.8rem rgba(35, 15, 5, 0.16);
 }
 
-.back-frame {
-  position: absolute;
-  inset: 5%;
-  border: 1px solid rgba(255, 253, 248, 0.55);
-  border-radius: 1.2rem;
-}
-
-.back-script {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  transform: translate(-50%, -50%) rotate(-5deg);
-  font-family: var(--script);
-  font-size: clamp(3rem, 7vw, 6rem);
-  white-space: nowrap;
-  opacity: 0.22;
-}
+/* ==========================================================================
+   Interior and card stack
+   ========================================================================== */
 
 .interior {
   position: absolute;
@@ -366,21 +341,28 @@ button {
 
 .insert-stack {
   position: absolute;
-  z-index: auto;
   top: 1.5%;
   right: 1%;
   bottom: 4%;
   left: 51%;
 }
 
+/* Card geometry is type-based, so removing a card never changes the others. */
+
 .insert-card {
-  --card-rotation: 0deg;
+  --card-width: 92%;
+  --card-height: 96%;
+  --card-layer: 1;
+
+  -webkit-user-select: none;
+  user-select: none;
   container-type: size;
   position: absolute;
+  z-index: var(--card-layer);
   bottom: 0;
   left: 50%;
-  width: 92%;
-  height: 96%;
+  width: var(--card-width);
+  height: var(--card-height);
   margin: 0;
   overflow: hidden;
   border: 0;
@@ -400,21 +382,18 @@ button {
 }
 
 .insert-card--party {
-  width: 92%;
-  height: 97%;
-  z-index: 1;
+  --card-height: 97%;
+  --card-layer: 1;
 }
 
 .insert-card--ceremony {
-  width: 92%;
-  height: 76%;
-  z-index: 2;
+  --card-height: 76%;
+  --card-layer: 2;
 }
 
 .insert-card--message {
-  width: 92%;
-  height: 55%;
-  z-index: 3;
+  --card-height: 55%;
+  --card-layer: 3;
 }
 
 .insert-card.is-active {
@@ -434,6 +413,8 @@ button {
   outline: 3px solid var(--gold);
   outline-offset: 4px;
 }
+
+/* Card content and typography */
 
 .insert-inner {
   position: absolute;
@@ -476,17 +457,6 @@ button {
   color: var(--green-dark);
 }
 
-.insert-ornament {
-  position: absolute;
-  top: clamp(0.75rem, 1.5vw, 1.2rem);
-  left: 10%;
-  width: 80%;
-  height: clamp(2.4rem, 5vw, 4rem);
-  border-top: 1px solid currentColor;
-  border-right: 1px solid currentColor;
-  opacity: 0.78;
-}
-
 .insert-card--party .insert-kicker,
 .insert-card--ceremony .insert-kicker {
   position: absolute;
@@ -521,9 +491,7 @@ button {
 }
 
 .insert-card--party .insert-content,
-.insert-card--party .card-number,
-.insert-card--ceremony .insert-content,
-.insert-card--ceremony .card-number {
+.insert-card--ceremony .insert-content {
   position: relative;
   z-index: 2;
 }
@@ -544,11 +512,13 @@ button {
 }
 
 .insert-content {
+  --content-gap: clamp(0.65rem, 3cqw, 1.2rem);
+
   width: 100%;
   display: grid;
   flex: 1;
   align-content: start;
-  gap: clamp(0.65rem, 3cqw, 1.2rem);
+  gap: var(--content-gap);
   font-size: clamp(0.75rem, 4.25cqw, 1.15rem);
   line-height: 1.26;
   letter-spacing: 0.045em;
@@ -598,6 +568,7 @@ button {
   flex: 1;
   flex-direction: column;
   justify-content: center;
+  gap: calc(var(--content-gap) + var(--content-gap));
   font-size: clamp(0.9rem, 5.25cqw, 1.65rem);
   line-height: 1.35;
 }
@@ -607,6 +578,7 @@ button {
   flex: 1;
   flex-direction: column;
   justify-content: center;
+  gap: calc(var(--content-gap) + var(--content-gap) + var(--content-gap));
   font-size: clamp(1.1rem, 5.6cqw, 1.75rem);
   line-height: 1.35;
 }
@@ -626,35 +598,30 @@ button {
   flex: 1;
   flex-direction: column;
   justify-content: flex-start;
-  padding-top: clamp(1.4rem, 7.5cqw, 2rem);
+  padding-top: clamp(4.5rem, 22cqh, 7rem);
   font-size: clamp(0.85rem, 4.5cqw, 1.45rem);
   line-height: 1.35;
 }
 
 .message-salutation {
+  position: absolute;
+  z-index: 3;
+  top: clamp(1.75rem, 7cqh, 2.5rem);
+  right: clamp(0.8rem, 4.5cqw, 1.7rem);
+  left: clamp(0.8rem, 4.5cqw, 1.7rem);
+  margin: 0;
   font-family: "Amsterdam Four", var(--script);
   font-size: clamp(1.35rem, 7.8cqw, 2.1rem);
+  font-weight: 400;
   letter-spacing: 0;
   line-height: 1;
+  text-align: center;
   text-transform: none;
 }
 
-.insert-card--message .insert-content p + p {
-  margin-top: clamp(0.55rem, 2.6cqw, 0.8rem);
-}
-
-.insert-card--message .insert-content .message-salutation + p {
-  margin-top: clamp(0.8rem, 4cqw, 1.25rem);
-}
-
-.card-number {
-  position: absolute;
-  right: 1.15rem;
-  bottom: 0.85rem;
-  font-size: 0.64rem;
-  letter-spacing: 0.14em;
-  opacity: 0.58;
-}
+/* ==========================================================================
+   Envelope pocket
+   ========================================================================== */
 
 .pocket-shadow,
 .pocket {
@@ -662,21 +629,25 @@ button {
   right: 0%;
   bottom: 0%;
   left: 50%;
-  height: 58%;
+  height: 48%;
 }
 
 .book.has-two-cards .insert-card--message {
-  bottom: 0;
-  height: 67%;
+  --card-height: 67%;
 }
 
 .book.has-two-cards .insert-card--message .insert-content {
-  justify-content: space-evenly;
-  padding-top: clamp(0.75rem, 3cqh, 1.5rem);
+  justify-content: center;
+  gap: clamp(0.4rem, 1.3cqh, 0.7rem);
+  line-height: 1.6;
 }
 
 .book.has-two-cards .insert-card--message .insert-content p + p {
   margin-top: 0;
+}
+
+.book.has-two-cards .insert-card--message .message-salutation {
+  top: clamp(2.4rem, 9cqh, 4.2rem);
 }
 
 .pocket-shadow {
@@ -740,6 +711,10 @@ button {
   transform: translate(-50%, -50%);
 }
 
+/* ==========================================================================
+   Controls and fallback messaging
+   ========================================================================== */
+
 .interaction-bar {
   min-height: 2.4rem;
   display: flex;
@@ -792,6 +767,10 @@ button {
   text-align: center;
 }
 
+/* ==========================================================================
+   Responsive layout
+   ========================================================================== */
+
 @media (max-width: 760px) {
   .experience {
     padding: 0.85rem 0.65rem 0.7rem;
@@ -840,7 +819,6 @@ button {
   }
 
   .inside-mark,
-  .inside-date,
   .spine {
     display: none;
   }
@@ -856,8 +834,7 @@ button {
   }
 
   .insert-card {
-    left: 50%;
-    transform: translateX(-50%);
+    --card-width: 85%;
   }
   .insert-card--party .insert-kicker {
     top: -0.6em;
@@ -870,18 +847,15 @@ button {
   }
 
   .insert-card--party {
-    width: 85%;
-    height: 97%;
+    --card-height: 97%;
   }
 
   .insert-card--ceremony {
-    width: 85%;
-    height: 77%;
+    --card-height: 77%;
   }
 
   .insert-card--message {
-    width: 85%;
-    height: 57%;
+    --card-height: 57%;
   }
 
   .insert-card.is-active {
@@ -895,7 +869,7 @@ button {
   }
 
   .insert-content {
-    gap: clamp(0.45rem, min(3cqw, 2.5cqh), 1.2rem);
+    --content-gap: clamp(0.45rem, min(3cqw, 2.5cqh), 1.2rem);
   }
 
   .insert-card--party .insert-content {
@@ -912,7 +886,6 @@ button {
   }
 
   .insert-card--message .insert-content {
-    padding-top: clamp(0.75rem, min(7.5cqw, 6.5cqh), 2rem);
     font-size: clamp(0.68rem, min(4.5cqw, 4cqh), 1.45rem);
   }
 
@@ -924,20 +897,15 @@ button {
     margin: 0;
   }
 
-  .insert-card--message .insert-content .message-salutation + p {
-    margin-top: clamp(0.8rem, min(8cqw, 5.4cqh), 2.5rem);
-  }
-
   .pocket-shadow,
   .pocket {
     right: 0%;
     left: 0%;
-    height: 58%;
+    height: 48%;
   }
 
   .book.has-two-cards .insert-card--message {
-    bottom: 0;
-    height: 67%;
+    --card-height: 67%;
   }
 
   .pocket-monogram {

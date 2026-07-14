@@ -10,3 +10,7 @@ Thumbs.db
 # Optionale Build-Abhängigkeiten
 node_modules/
 dist/
+
+# Lokale Python-Prüfdateien
+__pycache__/
+*.py[cod]

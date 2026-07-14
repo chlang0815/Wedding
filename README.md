@@ -1,22 +1,40 @@
 # Digitale Hochzeitseinladung
 
-Die Website funktioniert ohne Installation oder Build-Schritt. Zum lokalen Ansehen einfach `index.html` im Browser öffnen.
+## Projektstruktur
 
-## Geschützte Einladungslinks
+```text
+Wedding/
+├── .editorconfig              Editor- und Formatierungsregeln
+├── .gitattributes             Zeilenenden und Binärdateien
+├── assets/                    Bilder, Papiertexturen und lokale Schrift
+├── tools/
+│   ├── check.ps1              Syntax- und Konsistenzprüfung
+│   └── serve.py               Lokaler Server mit Pages-Fallback
+├── 404.html                   GitHub-Pages-Fallback für private Pfade
+├── index.html                 HTML-Einstiegspunkt
+├── invitation.config.js       Änderbare Inhalte und Zugangscode-Hashes
+├── script.js                  Rendering, Routing und Interaktionen
+└── styles.css                 Design, Kartenlayout und Responsive-Regeln
+```
 
-Die Website ist nur über zwei lange, nicht erratbare Link-Codes erreichbar. Im
-Repository stehen ausschließlich deren SHA-256-Prüfwerte. Die eigentlichen Links
-werden bewusst nicht im Repository dokumentiert.
+## Lokal starten
 
-- Ein Link zeigt Trauung und Feier.
-- Ein Link zeigt ausschließlich die Feier.
-- Die Startseite, alte `?invite=`-Links und unbekannte Codes zeigen eine Fehlerseite.
+Voraussetzung ist Python 3. Im Projektordner:
 
-Die Link-Codes dürfen nicht geändert oder gekürzt werden. Wer einen Link erhält,
-kann ihn allerdings weitergeben; die Lösung ist kein Ersatz für einen echten Login.
+```powershell
+python tools/serve.py
+```
 
-## Inhalte ändern
+## Projekt prüfen
 
-Alle variablen Angaben stehen am Anfang von `script.js` im Objekt `INVITATION`. Dort lassen sich Datum, Uhrzeiten, Orte, Parkhinweise und Dresscode zentral ändern. Der Einladungstext steht wenige Zeilen darunter im Eintrag `message`.
+Node.js und Git müssen verfügbar sein. Unter PowerShell:
 
-Die Seite ist absichtlich mit `noindex, nofollow` versehen, damit Suchmaschinen sie nicht regulär in Suchergebnisse aufnehmen. Das ersetzt keinen echten Passwortschutz.
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/check.ps1
+```
+
+Der Check prüft:
+
+1. JavaScript-Syntax beider Module
+2. Identität von `index.html` und `404.html`
+3. Whitespace-Fehler im Git-Diff

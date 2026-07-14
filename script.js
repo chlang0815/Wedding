@@ -1,78 +1,126 @@
-const INVITATION = {
-  couple: "J & C",
-  weddingDate: "19.09.2026",
-  ceremony: {
-    time: "12:15 Uhr",
-    venue: "Schlosskapelle",
-    address: "39326 Wolmirstedt",
-    parking: "Direkt vor Ort",
-  },
-  party: {
-    time: "14:00 Uhr",
-    venue: "Basta Magdeburg",
-    address: "Halberstädter Str. 51, 39112 Magdeburg",
-    addressLine1: "Halberstädter Str. 51,",
-    addressLine2: "39112 Magdeburg",
-    parking: "Plätze vor Ort<br>Alternativ in den<br>Nebenstraßen",
-    dressCode: "Black-Tie optional",
-    food: "Bitte meldet euch bei<br>Allergien.<br>Vegane Optionen sind<br>vorhanden.",
-  },
-};
+import { ACCESS_CODE_HASHES, INVITATION } from "./invitation.config.js";
 
-function getGoogleMapsUrl(venue, address) {
-  const query = encodeURIComponent(`${venue}, ${address}`);
+const SELECTORS = Object.freeze({
+  experience: ".experience",
+  book: "#invitationBook",
+  cover: "#cover",
+  insertStack: "#insertStack",
+  pocket: ".pocket",
+  hint: "#interactionHint",
+  replayButton: "#replayButton",
+});
+
+// ---------------------------------------------------------------------------
+// Content rendering
+// ---------------------------------------------------------------------------
+
+function renderLines(lines) {
+  return lines.join("<br>");
+}
+
+function getGoogleMapsUrl(event) {
+  const query = encodeURIComponent(
+    [event.venue, ...event.addressLines].join(" "),
+  );
+
   return `https://www.google.com/maps/search/?api=1&query=${query}`;
 }
 
-const cards = {
-  ceremony: {
-    type: "ceremony",
-    title: "Die Trauung",
-    label: "Informationen zur Trauung",
-    content: `
-      <p><strong>Uhrzeit</strong><br>${INVITATION.ceremony.time}</p>
-      <p></p>
-      <p></p>
-      <address class="address"><strong>Ort</strong><br><a class="location-link" href="${getGoogleMapsUrl(INVITATION.ceremony.venue, INVITATION.ceremony.address)}" target="_blank" rel="noopener noreferrer" aria-label="${INVITATION.ceremony.venue} in Google Maps öffnen">${INVITATION.ceremony.venue}<br>${INVITATION.ceremony.address}</a></address>
-      <p></p>
-      <p></p>
-      <p><strong>Parken</strong><br>${INVITATION.ceremony.parking}</p>
-    `,
-  },
-  party: {
-    type: "party",
-    title: "Die Feier",
-    label: "Informationen zur Feier",
-    content: `
-      <p><strong>Uhrzeit</strong><br>${INVITATION.party.time}</p>
-      <p></p>
-      <address class="address"><strong>Ort</strong><br><a class="location-link" href="${getGoogleMapsUrl(INVITATION.party.venue, INVITATION.party.address)}" target="_blank" rel="noopener noreferrer" aria-label="${INVITATION.party.venue} in Google Maps öffnen"><span class="location-link__line">${INVITATION.party.venue}</span><span class="location-link__line">${INVITATION.party.addressLine1}</span><span class="location-link__line">${INVITATION.party.addressLine2}</span></a></address>
-      <p></p>
-      <p><strong>Parken</strong><br>${INVITATION.party.parking}</p>
-      <p></p>
-      <p><strong>Dresscode</strong><br>${INVITATION.party.dressCode}</p>
-      <p></p>
-      <p><strong>Verpflegung</strong><br>${INVITATION.party.food}</p>
-    `,
-  },
-  message: {
-    type: "message",
-    title: "",
-    label: "Persönlicher Einladungstext",
-    content: `
-      <p class="message-salutation">Liebe Familie, liebe Freunde,</p>
-      <p>Danke, dass Ihr unseren besonderen Tag mit uns celebriert!</p>
-      <p>Wir freuen uns riesig auf den Tag und darauf, mit euch zusammen unsere Ehe zu feiern.</p>
-      <p>Falls Ihr uns darüber hinaus eine Freude bereiten möchtet, würden wir uns über einen Beitrag zu unserer Hochzeitsreise sehr freuen.</p>
-      <p>Am meisten aber zählt für uns, dass Ihr diesen Tag mit uns teilt.</p>
-    `,
-  },
-};
+function renderLocation(event) {
+  const addressLines = [event.venue, ...event.addressLines]
+    .map((line) => `<span class="location-link__line">${line}</span>`)
+    .join("");
 
-const ACCESS_CODE_HASHES = {
-  "71924b71aaca7612c1d92740044b6290676e9f5d661e93b98bcbebca970534e3": "all",
-  "7a12560cb8678eabab7f02b5b028efdf3e98f38bc2592a5ff5dc81a98ef9c209": "party",
-};
+  return `
+    <address class="address">
+      <strong>Ort</strong><br>
+      <a
+        class="location-link"
+        href="${getGoogleMapsUrl(event)}"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="${event.venue} in Google Maps öffnen"
+      >${addressLines}</a>
+    </address>
+  `;
+}
+
+function renderDetail(label, lines) {
+  return `<p><strong>${label}</strong><br>${renderLines(lines)}</p>`;
+}
+
+function getCards() {
+  const ceremony = INVITATION.ceremony;
+  const party = INVITATION.party;
+
+  return {
+    ceremony: {
+      type: "ceremony",
+      title: "Die Trauung",
+      label: "Informationen zur Trauung",
+      content: [
+        renderDetail("Uhrzeit", [ceremony.time]),
+        renderLocation(ceremony),
+        renderDetail("Parken", ceremony.parkingLines),
+      ].join(""),
+    },
+    party: {
+      type: "party",
+      title: "Die Feier",
+      label: "Informationen zur Feier",
+      content: [
+        renderDetail("Uhrzeit", [party.time]),
+        renderLocation(party),
+        renderDetail("Parken", party.parkingLines),
+        renderDetail("Dresscode", [party.dressCode]),
+        renderDetail("Verpflegung", party.foodLines),
+      ].join(""),
+    },
+    message: {
+      type: "message",
+      title: "",
+      label: "Persönlicher Einladungstext",
+      salutation: INVITATION.message.salutation,
+      content: INVITATION.message.paragraphs
+        .map((paragraph) => `<p>${paragraph}</p>`)
+        .join(""),
+    },
+  };
+}
+
+function renderCard(card) {
+  const article = document.createElement("article");
+  const eventHeader =
+    card.type === "party" || card.type === "ceremony"
+      ? '<img class="event-frame-layer" src="assets/party-header-frame.png" alt="" aria-hidden="true">'
+      : "";
+  const title = card.title
+    ? `<h2 class="insert-kicker">${card.title}</h2>`
+    : "";
+  const salutation = card.salutation
+    ? `<h2 class="message-salutation">${card.salutation}</h2>`
+    : "";
+
+  article.className = `insert-card insert-card--${card.type}`;
+  article.tabIndex = 0;
+  article.setAttribute("role", "button");
+  article.setAttribute("aria-label", `${card.label} vollständig anzeigen`);
+  article.setAttribute("aria-pressed", "false");
+  article.innerHTML = `
+    <div class="insert-inner">
+      ${eventHeader}
+      ${title}
+      ${salutation}
+      <div class="insert-content">${card.content}</div>
+    </div>
+  `;
+
+  return article;
+}
+
+// ---------------------------------------------------------------------------
+// Private-link routing
+// ---------------------------------------------------------------------------
 
 function showAccessError() {
   document.title = "Einladung nicht gefunden";
@@ -105,83 +153,49 @@ async function getInvitationType() {
   return ACCESS_CODE_HASHES[hash] ?? null;
 }
 
-async function initializeInvitation() {
-  const invitationType = await getInvitationType();
+// ---------------------------------------------------------------------------
+// Interaction
+// ---------------------------------------------------------------------------
 
-  if (!invitationType) {
-    showAccessError();
-    return;
+function getRequiredElement(selector) {
+  const element = document.querySelector(selector);
+
+  if (!element) {
+    throw new Error(`Required element not found: ${selector}`);
   }
 
-  const cardOrder =
-    invitationType === "party"
-      ? [cards.party, cards.message]
-      : [cards.party, cards.ceremony, cards.message];
+  return element;
+}
 
-  const experience = document.querySelector(".experience");
-  const book = document.querySelector("#invitationBook");
-  const cover = document.querySelector("#cover");
-  const insertStack = document.querySelector("#insertStack");
-  const pocket = document.querySelector(".pocket");
-  const hint = document.querySelector("#interactionHint");
-  const replayButton = document.querySelector("#replayButton");
+function isLinkEvent(event) {
+  return event.target instanceof Element && Boolean(event.target.closest("a"));
+}
 
-  book.classList.toggle("has-two-cards", cardOrder.length === 2);
-
-  document.querySelectorAll("[data-wedding-date]").forEach((element) => {
-    element.textContent = INVITATION.weddingDate;
-  });
-
-  document.title = `${INVITATION.couple} · Hochzeitseinladung`;
-
-  cardOrder.forEach((card, index) => {
-    const article = document.createElement("article");
-    article.className = `insert-card insert-card--${card.type}`;
-    article.tabIndex = 0;
-    article.setAttribute("role", "button");
-    article.setAttribute("aria-label", `${card.label} vollständig anzeigen`);
-    article.setAttribute("aria-pressed", "false");
-    article.innerHTML = `
-      <div class="insert-inner">
-        ${
-          card.type === "party" || card.type === "ceremony"
-            ? '<img class="event-frame-layer" src="assets/party-header-frame.png" alt="" aria-hidden="true">'
-            : card.type === "message"
-              ? ""
-              : '<div class="insert-ornament" aria-hidden="true"></div>'
-        }
-        <h2 class="insert-kicker">${card.title}</h2>
-        <div class="insert-content">${card.content}</div>
-      </div>
-    `;
-    insertStack.append(article);
-  });
-
-  const insertCards = [...document.querySelectorAll(".insert-card")];
-
+function setupCardInteractions(cards, book) {
   function setActiveCard(selectedCard) {
-    insertCards.forEach((card) => {
-      const active =
+    cards.forEach((card) => {
+      const isActive =
         card === selectedCard && !card.classList.contains("is-active");
-      card.classList.toggle("is-active", active);
-      card.setAttribute("aria-pressed", String(active));
+
+      card.classList.toggle("is-active", isActive);
+      card.setAttribute("aria-pressed", String(isActive));
     });
   }
 
-  insertCards.forEach((card) => {
+  cards.forEach((card) => {
     card.addEventListener("click", (event) => {
       event.stopPropagation();
-      if (event.target.closest("a")) return;
-      setActiveCard(card);
+      if (!isLinkEvent(event)) setActiveCard(card);
     });
 
     card.addEventListener("keydown", (event) => {
-      if (event.target.closest("a")) return;
+      if (isLinkEvent(event)) return;
 
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         setActiveCard(card);
       }
+
       if (event.key === "Escape") {
         setActiveCard(null);
         card.blur();
@@ -189,14 +203,14 @@ async function initializeInvitation() {
     });
   });
 
-  pocket.addEventListener("click", (event) => {
-    event.stopPropagation();
-  });
-
   book.addEventListener("click", () => {
     if (book.classList.contains("is-open")) setActiveCard(null);
   });
 
+  return setActiveCard;
+}
+
+function setupBookControls({ book, cover, hint, replayButton, setActiveCard }) {
   function openInvitation() {
     book.classList.remove("is-closed");
     book.classList.add("is-open");
@@ -207,7 +221,7 @@ async function initializeInvitation() {
     replayButton.hidden = false;
   }
 
-  function resetInvitation() {
+  function closeInvitation() {
     setActiveCard(null);
     book.classList.remove("is-open");
     book.classList.add("is-closed");
@@ -217,9 +231,52 @@ async function initializeInvitation() {
   }
 
   cover.addEventListener("click", openInvitation);
-  replayButton.addEventListener("click", resetInvitation);
-
-  experience.hidden = false;
+  replayButton.addEventListener("click", closeInvitation);
 }
 
-initializeInvitation().catch(showAccessError);
+// ---------------------------------------------------------------------------
+// Application bootstrap
+// ---------------------------------------------------------------------------
+
+async function initializeInvitation() {
+  const invitationType = await getInvitationType();
+
+  if (!invitationType) {
+    showAccessError();
+    return;
+  }
+
+  const elements = Object.fromEntries(
+    Object.entries(SELECTORS).map(([name, selector]) => [
+      name,
+      getRequiredElement(selector),
+    ]),
+  );
+  const cards = getCards();
+  const cardOrder =
+    invitationType === "party"
+      ? [cards.party, cards.message]
+      : [cards.party, cards.ceremony, cards.message];
+
+  elements.book.classList.toggle("has-two-cards", cardOrder.length === 2);
+  document.querySelectorAll("[data-wedding-date]").forEach((element) => {
+    element.textContent = INVITATION.weddingDate;
+  });
+  document.title = `${INVITATION.couple} · Hochzeitseinladung`;
+
+  cardOrder
+    .map(renderCard)
+    .forEach((card) => elements.insertStack.append(card));
+
+  const renderedCards = [...document.querySelectorAll(".insert-card")];
+  const setActiveCard = setupCardInteractions(renderedCards, elements.book);
+
+  elements.pocket.addEventListener("click", (event) => event.stopPropagation());
+  setupBookControls({ ...elements, setActiveCard });
+  elements.experience.hidden = false;
+}
+
+initializeInvitation().catch((error) => {
+  console.error(error);
+  showAccessError();
+});
