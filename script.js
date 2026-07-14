@@ -11,6 +11,8 @@ const INVITATION = {
     time: "14:00 Uhr",
     venue: "Basta Magdeburg",
     address: "Halberstädter Str. 51, 39112 Magdeburg",
+    addressLine1: "Halberstädter Str. 51,",
+    addressLine2: "39112 Magdeburg",
     parking: "Plätze vor Ort<br>Alternativ in den<br>Nebenstraßen",
     dressCode: "Black-Tie optional",
     food: "Bitte meldet euch bei<br>Allergien.<br>Vegane Optionen sind<br>vorhanden.",
@@ -44,7 +46,7 @@ const cards = {
     content: `
       <p><strong>Uhrzeit</strong><br>${INVITATION.party.time}</p>
       <p></p>
-      <address class="address"><strong>Ort</strong><br><a class="location-link" href="${getGoogleMapsUrl(INVITATION.party.venue, INVITATION.party.address)}" target="_blank" rel="noopener noreferrer" aria-label="${INVITATION.party.venue} in Google Maps öffnen">${INVITATION.party.venue}<br>${INVITATION.party.address}</a></address>
+      <address class="address"><strong>Ort</strong><br><a class="location-link" href="${getGoogleMapsUrl(INVITATION.party.venue, INVITATION.party.address)}" target="_blank" rel="noopener noreferrer" aria-label="${INVITATION.party.venue} in Google Maps öffnen"><span class="location-link__line">${INVITATION.party.venue}</span><span class="location-link__line">${INVITATION.party.addressLine1}</span><span class="location-link__line">${INVITATION.party.addressLine2}</span></a></address>
       <p></p>
       <p><strong>Parken</strong><br>${INVITATION.party.parking}</p>
       <p></p>

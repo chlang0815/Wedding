@@ -598,6 +598,10 @@ button {
   text-decoration-thickness: 2px;
 }
 
+.location-link__line {
+  display: block;
+}
+
 .location-link:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 0.2em;
@@ -905,7 +909,8 @@ button {
   }
 
   .insert-card--party .insert-content {
-    font-size: clamp(0.78rem, min(5.25cqw, 2.6cqh), 1.65rem);
+    font-size: clamp(0.6rem, min(5.25cqw, 2.2cqh), 1.65rem);
+    margin-top: 1rem;
   }
 
   .insert-card--ceremony .insert-content {
