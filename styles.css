@@ -909,7 +909,7 @@ button {
   }
 
   .insert-card--party .insert-content {
-    font-size: clamp(0.6rem, min(5.25cqw, 2.2cqh), 1.65rem);
+    font-size: clamp(0.7rem, min(5.25cqw, 2.25cqh), 1.65rem);
     margin-top: 1rem;
   }
 
