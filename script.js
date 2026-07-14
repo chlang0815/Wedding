@@ -11,9 +11,9 @@ const INVITATION = {
     time: "14:00 Uhr",
     venue: "Basta Magdeburg",
     address: "Halberstädter Str. 51, 39112 Magdeburg",
-    parking: "Plätze vor Ort oder in den Nebenstraßen",
-    dressCode: "Black Tie optional",
-    food: "Bitte meldet euch bei Allergien. Vegane Optionen sind vorhanden.",
+    parking: "Plätze vor Ort<br>Alternativ in den<br>Nebenstraßen",
+    dressCode: "Black-Tie optional",
+    food: "Bitte meldet euch bei<br>Allergien.<br>Vegane Optionen sind<br>vorhanden.",
   },
 };
 
@@ -24,7 +24,11 @@ const cards = {
     label: "Informationen zur Trauung",
     content: `
       <p><strong>Uhrzeit</strong><br>${INVITATION.ceremony.time}</p>
+      <p></p>
+      <p></p>
       <address class="address"><strong>Ort</strong><br>${INVITATION.ceremony.venue}<br>${INVITATION.ceremony.address}</address>
+      <p></p>
+      <p></p>
       <p><strong>Parken</strong><br>${INVITATION.ceremony.parking}</p>
     `,
   },
@@ -34,21 +38,26 @@ const cards = {
     label: "Informationen zur Feier",
     content: `
       <p><strong>Uhrzeit</strong><br>${INVITATION.party.time}</p>
+      <p></p>
       <address class="address"><strong>Ort</strong><br>${INVITATION.party.venue}<br>${INVITATION.party.address}</address>
+      <p></p>
       <p><strong>Parken</strong><br>${INVITATION.party.parking}</p>
+      <p></p>
       <p><strong>Dresscode</strong><br>${INVITATION.party.dressCode}</p>
+      <p></p>
       <p><strong>Verpflegung</strong><br>${INVITATION.party.food}</p>
     `,
   },
   message: {
     type: "message",
-    title: "Für euch",
+    title: "",
     label: "Persönlicher Einladungstext",
     content: `
       <p class="message-salutation">Liebe Familie, liebe Freunde,</p>
-      <p>Danke, dass ihr unseren besonderen Tag mit uns feiert! Wir freuen uns riesig auf den Tag und darauf, mit euch zusammen unsere Ehe zu feiern.</p>
-      <p>Falls ihr uns darüber hinaus eine Freude bereiten möchtet, würden wir uns über einen Beitrag zu unserer Hochzeitsreise sehr freuen.</p>
-      <p>Am meisten aber zählt für uns, dass ihr diesen Tag mit uns teilt.</p>
+      <p>Danke, dass Ihr unseren besonderen Tag mit uns celebriert!</p>
+      <p>Wir freuen uns riesig auf den Tag und darauf, mit euch zusammen unsere Ehe zu feiern.</p>
+      <p>Falls Ihr uns darüber hinaus eine Freude bereiten möchtet, würden wir uns über einen Beitrag zu unserer Hochzeitsreise sehr freuen.</p>
+      <p>Am meisten aber zählt für uns, dass Ihr diesen Tag mit uns teilt.</p>
     `,
   },
 };
@@ -66,10 +75,9 @@ function showAccessError() {
         <img
           class="access-error__monogram"
           src="assets/monogram.png"
-          alt="Monogramm J und C mit Eheringen"
+          alt="Monogramm J und C"
         />
         <h1 id="access-error-title">Einladung nicht gefunden</h1>
-        <p>Dieser Einladungslink ist ungültig oder unvollständig.</p>
       </div>
     </main>
   `;
@@ -137,7 +145,6 @@ async function initializeInvitation() {
         }
         <h2 class="insert-kicker">${card.title}</h2>
         <div class="insert-content">${card.content}</div>
-        <span class="card-number">0${index + 1}</span>
       </div>
     `;
     insertStack.append(article);
