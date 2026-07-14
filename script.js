@@ -126,7 +126,7 @@ async function initializeInvitation() {
   const hint = document.querySelector("#interactionHint");
   const replayButton = document.querySelector("#replayButton");
 
-  insertStack.classList.toggle("insert-stack--two", cardOrder.length === 2);
+  book.classList.toggle("has-two-cards", cardOrder.length === 2);
 
   document.querySelectorAll("[data-wedding-date]").forEach((element) => {
     element.textContent = INVITATION.weddingDate;

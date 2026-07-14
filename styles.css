@@ -405,31 +405,22 @@ button {
     filter 0.3s ease;
 }
 
-.insert-card:nth-child(1) {
+.insert-card--party {
   width: 92%;
   height: 97%;
   z-index: 1;
 }
 
-.insert-card:nth-child(2) {
+.insert-card--ceremony {
   width: 92%;
   height: 76%;
   z-index: 2;
 }
 
-.insert-card:nth-child(3) {
+.insert-card--message {
   width: 92%;
   height: 55%;
   z-index: 3;
-}
-
-.insert-stack--two .insert-card:nth-child(1) {
-  height: 94%;
-}
-
-.insert-stack--two .insert-card:nth-child(2) {
-  width: 92%;
-  height: 78%;
 }
 
 .insert-card.is-active {
@@ -680,6 +671,15 @@ button {
   height: 50%;
 }
 
+.book.has-two-cards .insert-card--message {
+  bottom: 12%;
+}
+
+.book.has-two-cards .pocket-shadow,
+.book.has-two-cards .pocket {
+  height: 60%;
+}
+
 .pocket-shadow {
   z-index: 7;
   filter: drop-shadow(0 -1px 4px rgba(46, 34, 21, 0.12));
@@ -870,28 +870,19 @@ button {
     font-size: clamp(1.8rem, min(12cqw, 8cqh), 4rem);
   }
 
-  .insert-card:nth-child(1) {
+  .insert-card--party {
     width: 85%;
     height: 97%;
   }
 
-  .insert-card:nth-child(2) {
+  .insert-card--ceremony {
     width: 85%;
     height: 77%;
   }
 
-  .insert-card:nth-child(3) {
+  .insert-card--message {
     width: 85%;
     height: 57%;
-  }
-
-  .insert-stack--two .insert-card:nth-child(1) {
-    height: 94%;
-  }
-
-  .insert-stack--two .insert-card:nth-child(2) {
-    width: 90%;
-    height: 78%;
   }
 
   .insert-card.is-active {
@@ -943,6 +934,15 @@ button {
     right: 0%;
     left: 0%;
     height: 50%;
+  }
+
+  .book.has-two-cards .insert-card--message {
+    bottom: 10%;
+  }
+
+  .book.has-two-cards .pocket-shadow,
+  .book.has-two-cards .pocket {
+    height: 60%;
   }
 
   .pocket-monogram {
