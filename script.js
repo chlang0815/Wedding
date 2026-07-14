@@ -17,6 +17,11 @@ const INVITATION = {
   },
 };
 
+function getGoogleMapsUrl(venue, address) {
+  const query = encodeURIComponent(`${venue}, ${address}`);
+  return `https://www.google.com/maps/search/?api=1&query=${query}`;
+}
+
 const cards = {
   ceremony: {
     type: "ceremony",
@@ -26,7 +31,7 @@ const cards = {
       <p><strong>Uhrzeit</strong><br>${INVITATION.ceremony.time}</p>
       <p></p>
       <p></p>
-      <address class="address"><strong>Ort</strong><br>${INVITATION.ceremony.venue}<br>${INVITATION.ceremony.address}</address>
+      <address class="address"><strong>Ort</strong><br><a class="location-link" href="${getGoogleMapsUrl(INVITATION.ceremony.venue, INVITATION.ceremony.address)}" target="_blank" rel="noopener noreferrer" aria-label="${INVITATION.ceremony.venue} in Google Maps öffnen">${INVITATION.ceremony.venue}<br>${INVITATION.ceremony.address}</a></address>
       <p></p>
       <p></p>
       <p><strong>Parken</strong><br>${INVITATION.ceremony.parking}</p>
@@ -39,7 +44,7 @@ const cards = {
     content: `
       <p><strong>Uhrzeit</strong><br>${INVITATION.party.time}</p>
       <p></p>
-      <address class="address"><strong>Ort</strong><br>${INVITATION.party.venue}<br>${INVITATION.party.address}</address>
+      <address class="address"><strong>Ort</strong><br><a class="location-link" href="${getGoogleMapsUrl(INVITATION.party.venue, INVITATION.party.address)}" target="_blank" rel="noopener noreferrer" aria-label="${INVITATION.party.venue} in Google Maps öffnen">${INVITATION.party.venue}<br>${INVITATION.party.address}</a></address>
       <p></p>
       <p><strong>Parken</strong><br>${INVITATION.party.parking}</p>
       <p></p>
@@ -164,10 +169,13 @@ async function initializeInvitation() {
   insertCards.forEach((card) => {
     card.addEventListener("click", (event) => {
       event.stopPropagation();
+      if (event.target.closest("a")) return;
       setActiveCard(card);
     });
 
     card.addEventListener("keydown", (event) => {
+      if (event.target.closest("a")) return;
+
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         setActiveCard(card);

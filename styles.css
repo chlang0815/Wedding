@@ -381,7 +381,7 @@ button {
 
 .insert-card {
   --card-rotation: 0deg;
-  container-type: inline-size;
+  container-type: size;
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -583,6 +583,27 @@ button {
 .insert-content .address {
   font-style: normal;
 }
+
+.location-link {
+  display: inline-block;
+  padding-block: 0.08em;
+  color: inherit;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.location-link:hover {
+  text-decoration-thickness: 2px;
+}
+
+.location-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 0.2em;
+  border-radius: 0.15em;
+}
+
 .insert-card--party .insert-content {
   display: flex;
   flex: 1;
@@ -837,12 +858,12 @@ button {
   }
   .insert-card--party .insert-kicker {
     top: -0.6em;
-    font-size: 12cqw;
+    font-size: clamp(1.8rem, min(12cqw, 8cqh), 4rem);
   }
 
   .insert-card--ceremony .insert-kicker {
     top: -0.7em;
-    font-size: 12cqw;
+    font-size: clamp(1.8rem, min(12cqw, 8cqh), 4rem);
   }
 
   .insert-card:nth-child(1) {
@@ -874,8 +895,42 @@ button {
     transform: translateX(-50%) translateY(-2%) rotate(0);
   }
 
+  .insert-card--party .insert-inner::before,
+  .insert-card--ceremony .insert-inner::before {
+    flex-basis: clamp(7rem, min(55cqw, 37cqh), 15rem);
+  }
+
+  .insert-content {
+    gap: clamp(0.45rem, min(3cqw, 2.5cqh), 1.2rem);
+  }
+
+  .insert-card--party .insert-content {
+    font-size: clamp(0.78rem, min(5.25cqw, 2.6cqh), 1.65rem);
+  }
+
+  .insert-card--ceremony .insert-content {
+    font-size: clamp(0.8rem, min(5.6cqw, 3.5cqh), 1.75rem);
+  }
+
+  .insert-card--message .insert-kicker {
+    font-size: clamp(1.5rem, min(10cqw, 9cqh), 3.2rem);
+  }
+
+  .insert-card--message .insert-content {
+    padding-top: clamp(0.75rem, min(7.5cqw, 6.5cqh), 2rem);
+    font-size: clamp(0.68rem, min(4.5cqw, 4cqh), 1.45rem);
+  }
+
+  .message-salutation {
+    font-size: clamp(1.05rem, min(7.8cqw, 6.8cqh), 2.1rem);
+  }
+
   .insert-card--message .insert-content p + p {
     margin: 0;
+  }
+
+  .insert-card--message .insert-content .message-salutation + p {
+    margin-top: clamp(0.8rem, min(8cqw, 5.4cqh), 2.5rem);
   }
 
   .pocket-shadow,
