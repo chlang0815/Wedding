@@ -1,0 +1,11 @@
+# Lokale Browser-Prüfungen
+.chrome-*/
+preview-*.png
+
+# Betriebssystem- und Editor-Dateien
+.DS_Store
+Thumbs.db
+
+# Optionale Build-Abhängigkeiten
+node_modules/
+dist/

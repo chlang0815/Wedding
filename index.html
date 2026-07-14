@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#003f2b" />
+    <title>Unsere Hochzeit · Einladung</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div class="paper-grain" aria-hidden="true"></div>
+
+    <main class="experience" aria-labelledby="page-title">
+      <h1 id="page-title" class="sr-only">Hochzeitseinladung von J und C</h1>
+
+      <div class="topline" aria-hidden="true">
+        <span></span>
+        <p>Eine Einladung von Herzen</p>
+        <span></span>
+      </div>
+
+      <section class="invitation-stage" aria-label="Interaktive Hochzeitseinladung">
+        <div class="book is-closed" id="invitationBook">
+          <div class="stationary-page" aria-hidden="true">
+            <div class="inside-mark">
+              <span>J</span>
+              <i>&amp;</i>
+              <span>C</span>
+            </div>
+          </div>
+
+          <button class="cover" id="cover" type="button" aria-label="Einladung öffnen">
+            <span class="cover-face cover-front">
+
+              <img
+                class="cover-monogram"
+                src="assets/monogram.png"
+                alt="Monogramm J und C mit Eheringen"
+              />
+              <span class="cover-copy">
+                <strong>Wir heiraten</strong>
+                <small data-wedding-date>Datum folgt</small>
+              </span>
+            </span>
+
+            <span class="cover-face cover-back" aria-hidden="true">
+            </span>
+          </button>
+
+          <div class="interior" id="interior" aria-live="polite">
+            <div class="spine" aria-hidden="true"></div>
+            <div class="insert-stack" id="insertStack"></div>
+            <div class="pocket" aria-hidden="true">
+              <img class="pocket-monogram" src="assets/monogram.png" alt="" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="interaction-bar">
+        <p id="interactionHint">Berühre die Karte, um sie zu öffnen …</p>
+        <button class="replay-button" id="replayButton" type="button" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 4v6h6M5.5 9.5A8 8 0 1 1 4 15" />
+          </svg>
+          Noch einmal öffnen
+        </button>
+      </div>
+    </main>
+
+    <noscript>
+      <p class="noscript">Bitte aktiviere JavaScript, um die Einladung zu öffnen.</p>
+    </noscript>
+  </body>
+</html>
