@@ -1,6 +1,7 @@
 # Lokale Browser-Prüfungen
 .chrome-*/
 preview-*.png
+invitation-links.private.txt
 
 # Betriebssystem- und Editor-Dateien
 .DS_Store

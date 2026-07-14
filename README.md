@@ -2,15 +2,18 @@
 
 Die Website funktioniert ohne Installation oder Build-Schritt. Zum lokalen Ansehen einfach `index.html` im Browser öffnen.
 
-## Zwei Einladungslinks
+## Geschützte Einladungslinks
 
-- Trauung und Feier: `index.html?invite=all`
-- Nur Feier: `index.html?invite=party`
+Die Website ist nur über zwei lange, nicht erratbare Link-Codes erreichbar. Im
+Repository stehen ausschließlich deren SHA-256-Prüfwerte. Die eigentlichen Links
+werden bewusst nicht im Repository dokumentiert.
 
-Nach dem späteren Veröffentlichen wird `index.html` durch die Domain ersetzt, zum Beispiel:
+- Ein Link zeigt Trauung und Feier.
+- Ein Link zeigt ausschließlich die Feier.
+- Die Startseite, alte `?invite=`-Links und unbekannte Codes zeigen eine Fehlerseite.
 
-- `https://unsere-hochzeit.de/?invite=all`
-- `https://unsere-hochzeit.de/?invite=party`
+Die Link-Codes dürfen nicht geändert oder gekürzt werden. Wer einen Link erhält,
+kann ihn allerdings weitergeben; die Lösung ist kein Ersatz für einen echten Login.
 
 ## Inhalte ändern
 
