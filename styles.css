@@ -187,12 +187,6 @@ button {
     top left;
   border: 1px solid rgba(69, 60, 43, 0.15);
   box-shadow: inset 1.2rem 0 2rem rgba(37, 25, 14, 0.04);
-  transition: opacity 0.15s ease 0.15s;
-}
-
-.book.is-closed .stationary-page {
-  opacity: 0;
-  transition-delay: 0s;
 }
 
 .inside-mark {
@@ -668,16 +662,21 @@ button {
   right: 0%;
   bottom: 0%;
   left: 50%;
-  height: 50%;
+  height: 58%;
 }
 
 .book.has-two-cards .insert-card--message {
-  bottom: 12%;
+  bottom: 0;
+  height: 67%;
 }
 
-.book.has-two-cards .pocket-shadow,
-.book.has-two-cards .pocket {
-  height: 60%;
+.book.has-two-cards .insert-card--message .insert-content {
+  justify-content: space-evenly;
+  padding-top: clamp(0.75rem, 3cqh, 1.5rem);
+}
+
+.book.has-two-cards .insert-card--message .insert-content p + p {
+  margin-top: 0;
 }
 
 .pocket-shadow {
@@ -933,16 +932,12 @@ button {
   .pocket {
     right: 0%;
     left: 0%;
-    height: 50%;
+    height: 58%;
   }
 
   .book.has-two-cards .insert-card--message {
-    bottom: 10%;
-  }
-
-  .book.has-two-cards .pocket-shadow,
-  .book.has-two-cards .pocket {
-    height: 60%;
+    bottom: 0;
+    height: 67%;
   }
 
   .pocket-monogram {
