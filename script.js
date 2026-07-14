@@ -1,4 +1,4 @@
-import { ACCESS_CODE_HASHES, INVITATION } from "./invitation.config.js";
+import { INVITATION, INVITATION_ROUTES } from "./invitation.config.js";
 
 const SELECTORS = Object.freeze({
   experience: ".experience",
@@ -119,7 +119,7 @@ function renderCard(card) {
 }
 
 // ---------------------------------------------------------------------------
-// Private-link routing
+// Invitation routing
 // ---------------------------------------------------------------------------
 
 function showAccessError() {
@@ -138,19 +138,11 @@ function showAccessError() {
   `;
 }
 
-async function getInvitationType() {
+function getInvitationType() {
   const pathParts = window.location.pathname.split("/").filter(Boolean);
-  const accessCode = pathParts.at(-1) ?? "";
+  const route = pathParts.at(-1) ?? "";
 
-  if (!accessCode || accessCode.length > 128) return null;
-
-  const encodedCode = new TextEncoder().encode(accessCode);
-  const digest = await window.crypto.subtle.digest("SHA-256", encodedCode);
-  const hash = [...new Uint8Array(digest)]
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
-
-  return ACCESS_CODE_HASHES[hash] ?? null;
+  return INVITATION_ROUTES[route] ?? null;
 }
 
 // ---------------------------------------------------------------------------
@@ -239,7 +231,7 @@ function setupBookControls({ book, cover, hint, replayButton, setActiveCard }) {
 // ---------------------------------------------------------------------------
 
 async function initializeInvitation() {
-  const invitationType = await getInvitationType();
+  const invitationType = getInvitationType();
 
   if (!invitationType) {
     showAccessError();

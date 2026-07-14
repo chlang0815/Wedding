@@ -45,7 +45,8 @@ def main() -> None:
     server = ThreadingHTTPServer(("127.0.0.1", args.port), handler)
 
     print(f"Wedding invitation: http://localhost:{args.port}")
-    print("Use a private path from invitation-links.private.txt to open an invitation.")
+    print(f"Invitation: http://localhost:{args.port}/einladung")
+    print(f"Party only: http://localhost:{args.port}/feier")
     print("Press Ctrl+C to stop the server.")
 
     try:

@@ -39,14 +39,10 @@ export const INVITATION = Object.freeze({
 });
 
 /**
- * SHA-256 digests of the private path tokens.
- *
- * Never commit the original tokens. They are kept locally in the ignored file
- * `invitation-links.private.txt`.
+ * Public, readable URL paths and the invitation variant they display.
+ * Unknown paths continue to show the invitation's error page.
  */
-export const ACCESS_CODE_HASHES = Object.freeze({
-  "71924b71aaca7612c1d92740044b6290676e9f5d661e93b98bcbebca970534e3":
-    "all",
-  "7a12560cb8678eabab7f02b5b028efdf3e98f38bc2592a5ff5dc81a98ef9c209":
-    "party",
+export const INVITATION_ROUTES = Object.freeze({
+  einladung: "all",
+  feier: "party",
 });

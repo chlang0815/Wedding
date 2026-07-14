@@ -16,6 +16,11 @@ try {
     throw "index.html and 404.html must remain identical."
   }
 
+  $customDomain = (Get-Content -Raw -LiteralPath "CNAME").Trim()
+  if ($customDomain -cne "lang-mueller.de") {
+    throw "CNAME must contain lang-mueller.de."
+  }
+
   git diff --check
   if ($LASTEXITCODE -ne 0) { throw "Git found whitespace errors." }
 
