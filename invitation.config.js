@@ -30,7 +30,7 @@ export const INVITATION = Object.freeze({
   message: {
     salutation: "Liebe Familie, liebe Freunde,",
     paragraphs: [
-      "Danke, dass Ihr unseren besonderen Tag mit uns celebriert!",
+      "Danke, dass Ihr unseren besonderen Tag mit uns zelebriert!",
       "Wir freuen uns riesig auf den Tag und darauf, mit euch zusammen unsere Ehe zu feiern.",
       "Falls Ihr uns darüber hinaus eine Freude bereiten möchtet, würden wir uns über einen Beitrag zu unserer Hochzeitsreise sehr freuen.",
       "Am meisten aber zählt für uns, dass Ihr diesen Tag mit uns teilt.",
