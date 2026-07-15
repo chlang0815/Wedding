@@ -43,6 +43,6 @@ export const INVITATION = Object.freeze({
  * Unknown paths continue to show the invitation's error page.
  */
 export const INVITATION_ROUTES = Object.freeze({
-  einladung: "all",
-  feier: "party",
+  "einladung/trauung": "all",
+  "einladung/feier": "party",
 });

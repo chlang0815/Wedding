@@ -7,8 +7,8 @@ Build-freie, statische Hochzeitseinladung für GitHub Pages. Die Website wird
 
 | Variante | Link | Inhalt |
 | --- | --- | --- |
-| Vollständige Einladung | <https://lang-mueller.de/einladung> | Trauung, Feier und Nachricht |
-| Nur Feier | <https://lang-mueller.de/feier> | Feier und Nachricht |
+| Vollständige Einladung | <https://lang-mueller.de/einladung/trauung> | Trauung, Feier und Nachricht |
+| Nur Feier | <https://lang-mueller.de/einladung/feier> | Feier und Nachricht |
 
 Die Startseite und unbekannte Pfade zeigen die Fehlerseite. Die lesbaren Pfade
 sind nicht geheim und stellen keinen Zugriffsschutz dar.
@@ -43,8 +43,8 @@ python tools/serve.py
 
 Danach sind die Varianten unter folgenden Adressen erreichbar:
 
-- <http://localhost:8000/einladung>
-- <http://localhost:8000/feier>
+- <http://localhost:8000/einladung/trauung>
+- <http://localhost:8000/einladung/feier>
 
 Die lokale Fehlerseite liegt unter <http://localhost:8000/>. Der Server wird
 mit `Strg+C` beendet.
@@ -56,8 +56,8 @@ Texte, Termine, Adressen und die Zuordnung der URL-Pfade stehen in
 
 ```js
 export const INVITATION_ROUTES = Object.freeze({
-  einladung: "all",
-  feier: "party",
+  "einladung/trauung": "all",
+  "einladung/feier": "party",
 });
 ```
 

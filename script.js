@@ -140,7 +140,15 @@ function showAccessError() {
 
 function getInvitationType() {
   const pathParts = window.location.pathname.split("/").filter(Boolean);
-  const route = pathParts.at(-1) ?? "";
+
+  if (
+    window.location.hostname.endsWith("github.io") &&
+    pathParts[0] === "Wedding"
+  ) {
+    pathParts.shift();
+  }
+
+  const route = pathParts.join("/");
 
   return INVITATION_ROUTES[route] ?? null;
 }
