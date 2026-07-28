@@ -19,7 +19,7 @@ export const INVITATION = Object.freeze({
     venue: "Basta Magdeburg",
     addressLines: ["Halberstädter Str. 51,", "39112 Magdeburg"],
     parkingLines: ["Plätze vor Ort", "Alternativ in den", "Nebenstraßen"],
-    dressCode: "Black-Tie optional",
+    dressCode: "Black Tie optional",
     foodLines: [
       "Bitte meldet euch bei",
       "Allergien.",

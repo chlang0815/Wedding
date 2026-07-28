@@ -49,6 +49,22 @@ function renderDetail(label, lines) {
   return `<p><strong>${label}</strong><br>${renderLines(lines)}</p>`;
 }
 
+function renderDressCode(dressCode) {
+  return `
+    <p>
+      <strong>Dresscode</strong><br>
+      <button
+        class="dress-code-trigger"
+        type="button"
+        aria-haspopup="dialog"
+        aria-controls="dressCodeDialog"
+      >
+        ${dressCode}
+      </button>
+    </p>
+  `;
+}
+
 function getCards() {
   const ceremony = INVITATION.ceremony;
   const party = INVITATION.party;
@@ -72,7 +88,7 @@ function getCards() {
         renderDetail("Uhrzeit", [party.time]),
         renderLocation(party),
         renderDetail("Parken", party.parkingLines),
-        renderDetail("Dresscode", [party.dressCode]),
+        renderDressCode(party.dressCode),
         renderDetail("Verpflegung", party.foodLines),
       ].join(""),
     },
@@ -167,8 +183,11 @@ function getRequiredElement(selector) {
   return element;
 }
 
-function isLinkEvent(event) {
-  return event.target instanceof Element && Boolean(event.target.closest("a"));
+function isInteractiveEvent(event) {
+  return (
+    event.target instanceof Element &&
+    Boolean(event.target.closest("a, button, input, select, textarea"))
+  );
 }
 
 function setupCardInteractions(cards, book) {
@@ -185,11 +204,11 @@ function setupCardInteractions(cards, book) {
   cards.forEach((card) => {
     card.addEventListener("click", (event) => {
       event.stopPropagation();
-      if (!isLinkEvent(event)) setActiveCard(card);
+      if (!isInteractiveEvent(event)) setActiveCard(card);
     });
 
     card.addEventListener("keydown", (event) => {
-      if (isLinkEvent(event)) return;
+      if (isInteractiveEvent(event)) return;
 
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
@@ -208,6 +227,34 @@ function setupCardInteractions(cards, book) {
   });
 
   return setActiveCard;
+}
+
+function setupDressCodeDialog() {
+  const dialog = getRequiredElement("#dressCodeDialog");
+  const closeButton = getRequiredElement("#dressCodeDialogClose");
+  const trigger = document.querySelector(".dress-code-trigger");
+
+  if (!trigger) return;
+
+  trigger.addEventListener("click", (event) => {
+    event.stopPropagation();
+    dialog.showModal();
+  });
+
+  closeButton.addEventListener("click", () => dialog.close());
+
+  dialog.addEventListener("click", (event) => {
+    if (event.target !== dialog) return;
+
+    const bounds = dialog.getBoundingClientRect();
+    const clickedInside =
+      event.clientX >= bounds.left &&
+      event.clientX <= bounds.right &&
+      event.clientY >= bounds.top &&
+      event.clientY <= bounds.bottom;
+
+    if (!clickedInside) dialog.close();
+  });
 }
 
 function setupBookControls({ book, cover, hint, replayButton, setActiveCard }) {
@@ -272,6 +319,7 @@ async function initializeInvitation() {
   const setActiveCard = setupCardInteractions(renderedCards, elements.book);
 
   elements.pocket.addEventListener("click", (event) => event.stopPropagation());
+  setupDressCodeDialog();
   setupBookControls({ ...elements, setActiveCard });
   elements.experience.hidden = false;
 }
