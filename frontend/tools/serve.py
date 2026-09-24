@@ -8,7 +8,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+FRONTEND_ROOT = Path(__file__).resolve().parents[1]
 
 
 class GitHubPagesHandler(SimpleHTTPRequestHandler):
@@ -41,7 +41,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    handler = partial(GitHubPagesHandler, directory=str(PROJECT_ROOT))
+    handler = partial(GitHubPagesHandler, directory=str(FRONTEND_ROOT))
     server = ThreadingHTTPServer(("127.0.0.1", args.port), handler)
 
     print(f"Wedding invitation: http://localhost:{args.port}")

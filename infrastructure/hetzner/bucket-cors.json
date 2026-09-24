@@ -1,0 +1,18 @@
+{
+  "CORSRules": [
+    {
+      "AllowedOrigins": [
+        "https://lang-mueller.de",
+        "http://localhost:8000"
+      ],
+      "AllowedHeaders": [
+        "content-type",
+        "x-amz-meta-photo-id",
+        "x-amz-meta-original-name"
+      ],
+      "AllowedMethods": ["GET", "HEAD", "PUT"],
+      "ExposeHeaders": ["ETag"],
+      "MaxAgeSeconds": 600
+    }
+  ]
+}

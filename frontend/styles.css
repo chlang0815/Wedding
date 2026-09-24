@@ -773,6 +773,26 @@ button {
   margin: 0;
 }
 
+.gallery-entry {
+  padding: 0.22rem 0.15rem;
+  color: var(--green);
+  border-bottom: 1px solid currentColor;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.gallery-entry:hover {
+  color: var(--terracotta-dark);
+}
+
+.gallery-entry:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 0.25rem;
+}
+
 .dress-code-dialog {
   width: min(38rem, calc(100vw - 2rem));
   max-height: calc(100svh - 2rem);

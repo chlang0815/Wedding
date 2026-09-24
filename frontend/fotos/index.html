@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="theme-color" content="#003d20" />
+    <title>J &amp; C · Hochzeitsfotos</title>
+    <link rel="stylesheet" href="../gallery.css?v=7" />
+    <script type="module" src="../gallery.js?v=7"></script>
+  </head>
+  <body class="gallery-page">
+    <div class="paper-grain" aria-hidden="true"></div>
+
+    <a
+      class="gallery-header__brand"
+      href="../einladung/trauung"
+      aria-label="Zur Einladung"
+    >
+      <img src="../assets/monogram.png" alt="J und C" />
+    </a>
+
+    <header class="gallery-header">
+      <h1>Hochzeitsfotos</h1>
+      <p class="gallery-header__subtext">J &amp; C · 19.09.2026</p>
+    </header>
+
+    <main class="gallery-shell">
+      <p class="gallery-intro">
+        Teilt eure schönsten Momente mit uns und allen Hochzeitsgästen.
+      </p>
+
+      <section class="auth-card paper-card" id="authView" aria-labelledby="authTitle">
+        <h2 id="authTitle">Private Galerie</h2>
+        <form id="loginForm">
+          <label for="password">Passwort</label>
+          <div class="password-row">
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              maxlength="256"
+            />
+            <button class="button button--primary" type="submit">Galerie öffnen</button>
+          </div>
+          <p class="form-message" id="loginMessage" role="status"></p>
+        </form>
+      </section>
+
+      <div id="galleryView" hidden>
+        <div class="gallery-toolbar">
+          <p><span class="status-dot" aria-hidden="true"></span>Private Hochzeitsgalerie</p>
+          <button class="text-button" id="logoutButton" type="button">Abmelden</button>
+        </div>
+
+        <section class="upload-card paper-card" aria-labelledby="uploadTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Eure Erinnerungen</p>
+              <h2 id="uploadTitle">Fotos hinzufügen</h2>
+            </div>
+            <span class="file-limit" id="fileLimit"></span>
+          </div>
+
+          <label class="file-picker" for="photoInput">
+            <span class="file-picker__icon" aria-hidden="true">＋</span>
+            <strong>Fotos auswählen</strong>
+          </label>
+          <input
+            class="sr-only"
+            id="photoInput"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
+            multiple
+          />
+
+          <label class="consent-row">
+            <input id="uploadConsent" type="checkbox" />
+            <span>
+              Ich bestätige, dass ich diese Fotos hochladen und mit den
+              Hochzeitsgästen teilen darf.
+            </span>
+          </label>
+
+          <div class="upload-actions">
+            <button class="button button--primary" id="uploadButton" type="button" disabled>
+              Auswahl hochladen
+            </button>
+            <button class="text-button" id="clearQueueButton" type="button" hidden>
+              Auswahl leeren
+            </button>
+          </div>
+
+          <div class="overall-progress" id="overallProgress" hidden>
+            <div>
+              <span id="overallProgressLabel">Upload wird vorbereitet …</span>
+              <strong id="overallProgressValue">0 %</strong>
+            </div>
+            <progress id="overallProgressBar" max="100" value="0"></progress>
+          </div>
+          <ul class="upload-queue" id="uploadQueue" aria-live="polite"></ul>
+
+          <details class="privacy-details">
+            <summary>Hinweis zum Datenschutz</summary>
+            <p>
+              Diese private Galerie ist nur für unsere Gäste bestimmt. Bitte teilt
+              Fotos anderer Personen nicht ohne deren Einverständnis außerhalb der
+              Hochzeitsgesellschaft. Die Galerie ist bis zum <time id="retentionDate">
+              festgelegten Löschdatum</time> vorgesehen und wird anschließend geschlossen.
+            </p>
+          </details>
+        </section>
+
+        <section class="photos-section" aria-labelledby="photosTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Gemeinsam gesammelt</p>
+              <h2 id="photosTitle">Die Galerie</h2>
+            </div>
+            <div class="section-heading__actions">
+              <button class="text-button" id="selectAllPhotosButton" type="button">
+                Alle auswählen
+              </button>
+              <button class="text-button" id="refreshButton" type="button">Aktualisieren</button>
+            </div>
+          </div>
+          <p class="gallery-message" id="galleryMessage" role="status"></p>
+          <div class="selection-bar selection-dock" id="selectionBar" hidden>
+            <div class="selection-bar__actions">
+              <button class="button button--primary" id="downloadSelectedButton" type="button" hidden>
+                Auswahl herunterladen
+              </button>
+              <button class="text-button" id="clearSelectionButton" type="button" hidden>
+                Auswahl aufheben
+              </button>
+            </div>
+          </div>
+          <div class="photo-grid" id="photoGrid"></div>
+          <button class="button button--secondary load-more" id="loadMoreButton" type="button" hidden>
+            Mehr Fotos laden
+          </button>
+        </section>
+
+      </div>
+    </main>
+
+    <dialog class="lightbox" id="lightbox" aria-label="Fotoansicht">
+      <div class="lightbox__bar">
+        <span id="lightboxCounter"></span>
+        <div>
+          <button class="lightbox__button" id="downloadButton" type="button">
+            Original laden
+          </button>
+          <button
+            class="lightbox__button lightbox__close"
+            id="lightboxClose"
+            type="button"
+            aria-label="Fotoansicht schließen"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+      <button class="lightbox__nav lightbox__nav--previous" id="previousPhoto" type="button" aria-label="Vorheriges Foto">‹</button>
+      <div class="lightbox__stage" id="lightboxStage">
+        <div class="lightbox__loader" id="lightboxLoader">Original wird geladen …</div>
+        <img id="lightboxImage" alt="Hochzeitsfoto in großer Ansicht" />
+      </div>
+      <button class="lightbox__nav lightbox__nav--next" id="nextPhoto" type="button" aria-label="Nächstes Foto">›</button>
+    </dialog>
+
+    <noscript>
+      <p class="noscript">Bitte aktiviere JavaScript, um die Fotogalerie zu verwenden.</p>
+    </noscript>
+  </body>
+</html>

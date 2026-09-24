@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="theme-color" content="#003d20" />
+    <title>J &amp; C · Galerie verwalten</title>
+    <link rel="stylesheet" href="../../gallery.css?v=7" />
+    <script type="module" src="../../gallery-admin.js?v=7"></script>
+  </head>
+  <body class="gallery-page admin-page">
+    <div class="paper-grain" aria-hidden="true"></div>
+
+    <a class="gallery-header__brand" href="../" aria-label="Zur Fotogalerie">
+      <img src="../../assets/monogram.png" alt="J und C" />
+    </a>
+
+    <header class="gallery-header">
+      <h1>Galerie verwalten</h1>
+      <p class="gallery-header__subtext">J &amp; C · 19.09.2026</p>
+    </header>
+
+    <main class="gallery-shell">
+      <p class="gallery-intro">Hier könnt ihr Fotos auswählen und dauerhaft löschen.</p>
+
+      <section class="auth-card paper-card" id="adminAuthView" aria-labelledby="adminAuthTitle">
+        <h2 id="adminAuthTitle">Admin-Anmeldung</h2>
+        <form id="adminLoginForm">
+          <label for="adminPassword">Admin-Passwort</label>
+          <div class="password-row">
+            <input
+              id="adminPassword"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              maxlength="256"
+            />
+            <button class="button button--primary" type="submit">Anmelden</button>
+          </div>
+          <p class="form-message" id="adminLoginMessage" role="status"></p>
+        </form>
+      </section>
+
+      <div id="adminView" hidden>
+        <div class="gallery-toolbar">
+          <p><span class="status-dot" aria-hidden="true"></span>Admin-Modus</p>
+          <div class="gallery-toolbar__actions">
+            <a class="text-button text-link" href="../">Zur Galerie</a>
+            <button class="text-button" id="adminLogoutButton" type="button">Abmelden</button>
+          </div>
+        </div>
+
+        <section class="photos-section admin-photos" aria-labelledby="adminPhotosTitle">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Private Galerie</p>
+              <h2 id="adminPhotosTitle">Fotos verwalten</h2>
+            </div>
+            <button class="text-button" id="adminRefreshButton" type="button">Aktualisieren</button>
+          </div>
+
+          <p class="gallery-message" id="adminMessage" role="status"></p>
+          <div class="selection-bar">
+            <strong id="adminSelectionCount">Keine Fotos ausgewählt</strong>
+            <div class="selection-bar__actions">
+              <button class="text-button" id="selectAllButton" type="button">Alle sichtbaren auswählen</button>
+              <button class="text-button" id="clearAdminSelectionButton" type="button" disabled>
+                Auswahl aufheben
+              </button>
+              <button class="button button--danger" id="deleteSelectedButton" type="button" disabled>
+                Auswahl löschen
+              </button>
+            </div>
+          </div>
+
+          <div class="photo-grid" id="adminPhotoGrid"></div>
+          <button class="button button--secondary load-more" id="adminLoadMoreButton" type="button" hidden>
+            Mehr Fotos laden
+          </button>
+        </section>
+      </div>
+    </main>
+
+    <noscript>
+      <p class="noscript">Bitte aktiviere JavaScript, um die Galerie zu verwalten.</p>
+    </noscript>
+  </body>
+</html>
