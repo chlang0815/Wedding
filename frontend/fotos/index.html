@@ -7,8 +7,8 @@
     <meta name="referrer" content="no-referrer" />
     <meta name="theme-color" content="#003d20" />
     <title>J &amp; C · Hochzeitsfotos</title>
-    <link rel="stylesheet" href="../gallery.css?v=7" />
-    <script type="module" src="../gallery.js?v=7"></script>
+    <link rel="stylesheet" href="../gallery.css?v=10" />
+    <script type="module" src="../gallery.js?v=8"></script>
   </head>
   <body class="gallery-page">
     <div class="paper-grain" aria-hidden="true"></div>
@@ -51,12 +51,26 @@
       </section>
 
       <div id="galleryView" hidden>
-        <div class="gallery-toolbar">
-          <p><span class="status-dot" aria-hidden="true"></span>Private Hochzeitsgalerie</p>
-          <button class="text-button" id="logoutButton" type="button">Abmelden</button>
+        <button class="text-button gallery-logout" id="logoutButton" type="button">
+          Abmelden
+        </button>
+
+        <div class="gallery-toolbar gallery-toolbar--guest">
+          <label class="button button--primary mobile-file-picker" for="photoInput">
+            <span aria-hidden="true">+</span>
+            Fotos auswählen
+          </label>
         </div>
 
-        <section class="upload-card paper-card" aria-labelledby="uploadTitle">
+        <input
+          class="sr-only"
+          id="photoInput"
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
+          multiple
+        />
+
+        <section class="upload-card paper-card is-empty" id="uploadCard" aria-labelledby="uploadTitle">
           <div class="section-heading">
             <div>
               <p class="section-kicker">Eure Erinnerungen</p>
@@ -65,17 +79,10 @@
             <span class="file-limit" id="fileLimit"></span>
           </div>
 
-          <label class="file-picker" for="photoInput">
+          <label class="file-picker" for="photoInput" aria-label="Fotos auswählen">
             <span class="file-picker__icon" aria-hidden="true">＋</span>
             <strong>Fotos auswählen</strong>
           </label>
-          <input
-            class="sr-only"
-            id="photoInput"
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
-            multiple
-          />
 
           <label class="consent-row">
             <input id="uploadConsent" type="checkbox" />
@@ -152,7 +159,7 @@
         <span id="lightboxCounter"></span>
         <div>
           <button class="lightbox__button" id="downloadButton" type="button">
-            Original laden
+            Herunterladen
           </button>
           <button
             class="lightbox__button lightbox__close"

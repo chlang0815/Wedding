@@ -20,6 +20,7 @@ const elements = Object.fromEntries(
     "loginMessage",
     "logoutButton",
     "photoInput",
+    "uploadCard",
     "uploadConsent",
     "uploadButton",
     "clearQueueButton",
@@ -161,6 +162,10 @@ function makeQueueItem(file) {
 function updateUploadControls() {
   const uploadable = state.queue.some((item) => item.status === "queued");
   const uploading = state.activeUploads > 0;
+  const selectedCount = state.queue.filter((item) => item.status !== "invalid").length;
+  elements.uploadButton.textContent = selectedCount
+    ? `Auswahl hochladen (${selectedCount})`
+    : "Auswahl hochladen";
   elements.uploadButton.disabled = !uploadable || !elements.uploadConsent.checked || uploading;
   elements.photoInput.disabled = uploading;
   elements.uploadConsent.disabled = uploading;
@@ -169,7 +174,9 @@ function updateUploadControls() {
 
 function renderQueue() {
   const fragment = document.createDocumentFragment();
-  state.queue.forEach((item) => {
+  const problemItems = state.queue.filter((item) => ["invalid", "error"].includes(item.status));
+
+  problemItems.forEach((item) => {
     const row = document.createElement("li");
     row.className = `queue-item is-${item.status}`;
 
@@ -182,11 +189,6 @@ function renderQueue() {
     status.className = "queue-item__status";
     status.textContent = item.message;
 
-    const progress = document.createElement("progress");
-    progress.max = 100;
-    progress.value = item.progress;
-    progress.setAttribute("aria-label", `Upload-Fortschritt für ${item.file.name}`);
-
     row.append(name, status);
     if (item.status === "error") {
       const retry = document.createElement("button");
@@ -196,10 +198,10 @@ function renderQueue() {
       retry.addEventListener("click", () => retryUpload(item));
       row.append(retry);
     }
-    row.append(progress);
     fragment.append(row);
   });
   elements.uploadQueue.replaceChildren(fragment);
+  elements.uploadCard.classList.toggle("is-empty", state.queue.length === 0);
   updateUploadControls();
   updateOverallProgress();
 }
@@ -210,20 +212,21 @@ function updateOverallProgress() {
     return;
   }
 
-  const totalBytes = state.queue.reduce((total, item) => total + item.file.size, 0);
-  const uploadedBytes = state.queue.reduce(
+  const trackedItems = state.queue.filter((item) => item.status !== "invalid");
+  const totalBytes = trackedItems.reduce((total, item) => total + item.file.size, 0);
+  const uploadedBytes = trackedItems.reduce(
     (total, item) => total + item.file.size * (item.progress / 100),
     0,
   );
   const percent = totalBytes ? Math.round((uploadedBytes / totalBytes) * 100) : 0;
-  const successes = state.queue.filter((item) => item.status === "success").length;
-  const failures = state.queue.filter((item) => item.status === "error").length;
+  const successes = trackedItems.filter((item) => item.status === "success").length;
+  const failures = trackedItems.filter((item) => item.status === "error").length;
 
   elements.overallProgress.hidden = state.activeUploads === 0 && successes === 0 && failures === 0;
   elements.overallProgressBar.value = percent;
   elements.overallProgressValue.textContent = `${percent} %`;
   elements.overallProgressLabel.textContent = state.activeUploads
-    ? `${successes} von ${state.queue.length} abgeschlossen`
+    ? `${successes} von ${trackedItems.length} abgeschlossen`
     : failures
       ? `${successes} erfolgreich, ${failures} fehlgeschlagen`
       : `${successes} Fotos erfolgreich hochgeladen`;
@@ -630,6 +633,7 @@ elements.logoutButton.addEventListener("click", async () => {
     state.photos = [];
     state.queue = [];
     state.selectedPhotoIds.clear();
+    renderQueue();
     showAuthenticated(false);
   }
 });
