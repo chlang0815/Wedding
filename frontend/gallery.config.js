@@ -3,7 +3,11 @@
  * Change apiBaseUrl to the HTTPS origin of the deployed FastAPI service before
  * publishing. The local default matches the backend README instructions.
  */
+// export const GALLERY_CONFIG = Object.freeze({
+//   apiBaseUrl: "http://localhost:8080",
+//   uploadConcurrency: 3,
+// });
 export const GALLERY_CONFIG = Object.freeze({
-  apiBaseUrl: "http://localhost:8080",
+  apiBaseUrl: "https://photos-api.lang-mueller.de",
   uploadConcurrency: 3,
 });
