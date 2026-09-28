@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     max_upload_size: int = Field(default=25 * 1024 * 1024, ge=1024)
     max_image_pixels: int = Field(default=50_000_000, ge=1_000_000)
     thumbnail_max_dimension: int = Field(default=1_280, ge=320, le=3_000)
-    gallery_page_size: int = Field(default=40, ge=10, le=100)
+    gallery_page_size: int = Field(default=50, ge=10, le=100)
 
     login_max_failures: int = Field(default=8, ge=2, le=100)
     login_window_seconds: int = Field(default=900, ge=60, le=86_400)

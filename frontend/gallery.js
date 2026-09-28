@@ -2,13 +2,28 @@ import { GALLERY_CONFIG } from "./gallery.config.js";
 
 const API_BASE_URL = GALLERY_CONFIG.apiBaseUrl.replace(/\/$/, "");
 const MAX_PHOTO_SELECTION = 100;
+const GALLERY_PAGE_SIZE = 50;
 const MIME_BY_EXTENSION = Object.freeze({
-  jpg: "image/jpeg",
-  jpeg: "image/jpeg",
-  png: "image/png",
-  webp: "image/webp",
-  heic: "image/heic",
-  heif: "image/heif",
+  jpg: ["image/jpeg"],
+  jpeg: ["image/jpeg"],
+  png: ["image/png"],
+  webp: ["image/webp"],
+  heic: [
+    "image/heic",
+    "image/heif",
+    "image/heic-sequence",
+    "image/heif-sequence",
+    "image/x-heic",
+    "image/x-heif",
+  ],
+  heif: [
+    "image/heif",
+    "image/heic",
+    "image/heif-sequence",
+    "image/heic-sequence",
+    "image/x-heif",
+    "image/x-heic",
+  ],
 });
 
 const elements = Object.fromEntries(
@@ -38,7 +53,11 @@ const elements = Object.fromEntries(
     "downloadSelectedButton",
     "clearSelectionButton",
     "photoGrid",
-    "loadMoreButton",
+    "paginationControls",
+    "previousPageButton",
+    "nextPageButton",
+    "pageIndicator",
+    "loadAllPhotosButton",
     "lightbox",
     "lightboxClose",
     "lightboxCounter",
@@ -57,8 +76,12 @@ const state = {
   activeUploads: 0,
   photos: [],
   selectedPhotoIds: new Set(),
-  loadingAllPhotos: false,
+  pageCache: new Map(),
+  currentPage: 1,
+  showAllPhotos: false,
+  loadingGallery: false,
   nextCursor: null,
+  totalPhotos: null,
   lightboxIndex: -1,
   lightboxRequest: 0,
   maxUploadBytes: 25 * 1024 * 1024,
@@ -126,9 +149,11 @@ function formatBytes(bytes) {
 }
 
 function getContentType(file) {
-  if (file.type) return file.type.toLowerCase();
   const extension = file.name.split(".").pop()?.toLowerCase();
-  return MIME_BY_EXTENSION[extension] || "";
+  const allowedTypes = MIME_BY_EXTENSION[extension];
+  const reportedType = (file.type || "").toLowerCase();
+  if (!reportedType && allowedTypes) return allowedTypes[0];
+  return reportedType;
 }
 
 function validateFile(file) {
@@ -137,7 +162,7 @@ function validateFile(file) {
   if (!extension || !MIME_BY_EXTENSION[extension]) {
     return "Dateityp nicht unterstützt";
   }
-  if (MIME_BY_EXTENSION[extension] !== contentType) {
+  if (!MIME_BY_EXTENSION[extension].includes(contentType)) {
     return "Dateiendung und Dateityp passen nicht zusammen";
   }
   if (file.size <= 0) return "Die Datei ist leer";
@@ -360,27 +385,59 @@ function renderPhotos(append = false) {
 
   if (!append) elements.photoGrid.replaceChildren();
   elements.photoGrid.append(fragment);
-  elements.loadMoreButton.hidden = !state.nextCursor;
-  elements.galleryMessage.textContent = state.photos.length
-    ? `${state.photos.length} ${state.photos.length === 1 ? "Foto" : "Fotos"}`
-    : "Noch sind keine Fotos da. Lade das erste hoch!";
+  updatePaginationControls();
+  if (state.totalPhotos === 0 || state.photos.length === 0) {
+    elements.galleryMessage.textContent = "Noch sind keine Fotos da. Lade das erste hoch!";
+  } else if (state.totalPhotos !== null) {
+    const noun = state.totalPhotos === 1 ? "Foto" : "Fotos";
+    elements.galleryMessage.textContent =
+      `${state.photos.length} von ${state.totalPhotos} ${noun} geladen`;
+  } else {
+    elements.galleryMessage.textContent =
+      `${state.photos.length} ${state.photos.length === 1 ? "Foto" : "Fotos"} geladen`;
+  }
   updateSelectionControls();
+}
+
+function updatePaginationControls() {
+  const knownTotal = state.totalPhotos ?? state.photos.length;
+  const totalPages = state.totalPhotos === null
+    ? null
+    : Math.max(1, Math.ceil(state.totalPhotos / GALLERY_PAGE_SIZE));
+  const hasMultiplePages = (totalPages ?? 1) > 1 || Boolean(state.nextCursor);
+
+  elements.paginationControls.hidden = !hasMultiplePages;
+  elements.previousPageButton.disabled =
+    state.loadingGallery || state.showAllPhotos || state.currentPage <= 1;
+  elements.nextPageButton.disabled =
+    state.loadingGallery || state.showAllPhotos || !state.nextCursor;
+  elements.loadAllPhotosButton.disabled = state.loadingGallery || state.showAllPhotos;
+  elements.loadAllPhotosButton.textContent = state.showAllPhotos
+    ? "Alle Fotos geladen"
+    : "Alle Fotos laden";
+  elements.pageIndicator.textContent = state.showAllPhotos
+    ? `Alle ${knownTotal} Fotos`
+    : totalPages === null
+      ? `Seite ${state.currentPage}`
+      : `Seite ${state.currentPage} von ${totalPages}`;
 }
 
 function updateSelectionControls() {
   const count = state.selectedPhotoIds.size;
-  const allLoadedSelected =
-    !state.nextCursor && state.photos.length > 0 && state.photos.every((photo) => state.selectedPhotoIds.has(photo.id));
+  const allVisibleSelected =
+    state.photos.length > 0 && state.photos.every((photo) => state.selectedPhotoIds.has(photo.id));
   elements.galleryView.classList.toggle("has-selection", count > 0);
   elements.selectAllPhotosButton.disabled =
-    state.loadingAllPhotos || state.photos.length === 0 || allLoadedSelected || count >= MAX_PHOTO_SELECTION;
-  elements.selectAllPhotosButton.textContent = state.loadingAllPhotos
-    ? "Alle werden geladen …"
-    : count >= MAX_PHOTO_SELECTION && state.nextCursor
-      ? `Maximal ${MAX_PHOTO_SELECTION} ausgewählt`
-      : allLoadedSelected
+    state.photos.length === 0 || allVisibleSelected || count >= MAX_PHOTO_SELECTION;
+  elements.selectAllPhotosButton.textContent = count >= MAX_PHOTO_SELECTION
+    ? `Maximal ${MAX_PHOTO_SELECTION} ausgewählt`
+    : allVisibleSelected
+      ? state.showAllPhotos
         ? "Alle ausgewählt"
-        : "Alle auswählen";
+        : "Seite ausgewählt"
+      : state.showAllPhotos
+        ? "Alle auswählen"
+        : "Seite auswählen";
   elements.selectionBar.hidden = count === 0;
   elements.downloadSelectedButton.hidden = count === 0;
   elements.clearSelectionButton.hidden = count === 0;
@@ -395,44 +452,21 @@ function clearPhotoSelection() {
   renderPhotos(false);
 }
 
-async function selectAllPhotos() {
-  if (state.loadingAllPhotos || state.photos.length === 0) return;
-  state.loadingAllPhotos = true;
-  elements.galleryMessage.textContent = "Alle Fotos werden geladen …";
-  updateSelectionControls();
+function selectAllPhotos() {
+  if (state.photos.length === 0) return;
+  const remaining = MAX_PHOTO_SELECTION - state.selectedPhotoIds.size;
+  const unselectedPhotos = state.photos.filter(
+    (photo) => !state.selectedPhotoIds.has(photo.id),
+  );
 
-  let cursor = state.nextCursor;
-  let failed = false;
-  const seenCursors = new Set();
-  try {
-    while (cursor && state.photos.length < MAX_PHOTO_SELECTION) {
-      if (seenCursors.has(cursor)) throw new Error("Die Galerie konnte nicht vollständig geladen werden.");
-      seenCursors.add(cursor);
-      const remaining = MAX_PHOTO_SELECTION - state.photos.length;
-      const page = await apiRequest(
-        `/api/photos?cursor=${encodeURIComponent(cursor)}&limit=${Math.min(100, remaining)}`,
-      );
-      state.photos.push(...page.photos);
-      cursor = page.next_cursor;
-      state.nextCursor = cursor;
-    }
+  unselectedPhotos.slice(0, remaining).forEach((photo) => {
+    state.selectedPhotoIds.add(photo.id);
+  });
+  renderPhotos(false);
 
-    state.selectedPhotoIds = new Set(
-      state.photos.slice(0, MAX_PHOTO_SELECTION).map((photo) => photo.id),
-    );
-    renderPhotos(false);
-  } catch (error) {
-    failed = true;
-    if (error.status === 401) showAuthenticated(false);
+  if (unselectedPhotos.length > remaining) {
     elements.galleryMessage.textContent =
-      error.message || "Nicht alle Fotos konnten ausgewählt werden.";
-  } finally {
-    state.loadingAllPhotos = false;
-    updateSelectionControls();
-    if (cursor && !failed) {
-      elements.galleryMessage.textContent =
-        `Es können höchstens ${MAX_PHOTO_SELECTION} Fotos pro ZIP ausgewählt werden.`;
-    }
+      `Es können höchstens ${MAX_PHOTO_SELECTION} Fotos gleichzeitig ausgewählt werden.`;
   }
 }
 
@@ -450,25 +484,118 @@ function togglePhotoSelection(photoId) {
 }
 
 async function loadPhotos(reset = false) {
+  if (!reset) return loadGalleryPage(state.currentPage + 1);
+
+  state.loadingGallery = true;
+  state.showAllPhotos = false;
+  state.currentPage = 1;
+  state.pageCache.clear();
+  state.selectedPhotoIds.clear();
   elements.refreshButton.disabled = true;
-  elements.loadMoreButton.disabled = true;
   elements.galleryMessage.textContent = "Fotos werden geladen …";
+  updatePaginationControls();
+
   try {
-    const cursor = reset ? null : state.nextCursor;
-    const query = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
-    const page = await apiRequest(`/api/photos${query}`);
-    state.photos = reset ? page.photos : [...state.photos, ...page.photos];
-    state.nextCursor = page.next_cursor;
-    if (reset) {
-      state.selectedPhotoIds.clear();
-    }
-    renderPhotos(!reset);
+    const page = await apiRequest(`/api/photos?limit=${GALLERY_PAGE_SIZE}`);
+    state.totalPhotos = page.total_count ?? null;
+    state.pageCache.set(1, {
+      photos: page.photos,
+      nextCursor: page.next_cursor,
+    });
+    showCachedPage(1);
   } catch (error) {
     if (error.status === 401) showAuthenticated(false);
     elements.galleryMessage.textContent = error.message || "Fotos konnten nicht geladen werden.";
   } finally {
+    state.loadingGallery = false;
     elements.refreshButton.disabled = false;
-    elements.loadMoreButton.disabled = false;
+    updatePaginationControls();
+  }
+}
+
+function showCachedPage(pageNumber) {
+  const page = state.pageCache.get(pageNumber);
+  if (!page) return;
+  state.currentPage = pageNumber;
+  state.photos = page.photos;
+  state.nextCursor = page.nextCursor;
+  renderPhotos(false);
+}
+
+async function loadGalleryPage(pageNumber) {
+  if (state.loadingGallery || state.showAllPhotos || pageNumber < 1) return;
+  const totalPages = state.totalPhotos === null
+    ? null
+    : Math.max(1, Math.ceil(state.totalPhotos / GALLERY_PAGE_SIZE));
+  if (totalPages !== null && pageNumber > totalPages) return;
+
+  if (state.pageCache.has(pageNumber)) {
+    showCachedPage(pageNumber);
+    return;
+  }
+  if (pageNumber !== state.currentPage + 1 || !state.nextCursor) return;
+
+  state.loadingGallery = true;
+  elements.refreshButton.disabled = true;
+  elements.galleryMessage.textContent = "Fotos werden geladen …";
+  updatePaginationControls();
+  try {
+    const page = await apiRequest(
+      `/api/photos?cursor=${encodeURIComponent(state.nextCursor)}&limit=${GALLERY_PAGE_SIZE}`,
+    );
+    state.pageCache.set(pageNumber, {
+      photos: page.photos,
+      nextCursor: page.next_cursor,
+    });
+    showCachedPage(pageNumber);
+  } catch (error) {
+    if (error.status === 401) showAuthenticated(false);
+    elements.galleryMessage.textContent = error.message || "Fotos konnten nicht geladen werden.";
+  } finally {
+    state.loadingGallery = false;
+    elements.refreshButton.disabled = false;
+    updatePaginationControls();
+  }
+}
+
+async function loadAllPhotos() {
+  if (state.loadingGallery || state.showAllPhotos) return;
+  state.loadingGallery = true;
+  elements.refreshButton.disabled = true;
+  elements.galleryMessage.textContent = "Alle Fotos werden geladen …";
+  updatePaginationControls();
+
+  const allPhotos = [];
+  const seenCursors = new Set();
+  let cursor = null;
+  try {
+    do {
+      if (cursor && seenCursors.has(cursor)) {
+        throw new Error("Die Galerie konnte nicht vollständig geladen werden.");
+      }
+      if (cursor) seenCursors.add(cursor);
+      const query = cursor
+        ? `?cursor=${encodeURIComponent(cursor)}&limit=100`
+        : "?limit=100";
+      const page = await apiRequest(`/api/photos${query}`);
+      if (cursor === null) state.totalPhotos = page.total_count ?? null;
+      allPhotos.push(...page.photos);
+      cursor = page.next_cursor;
+    } while (cursor);
+
+    state.photos = allPhotos;
+    state.nextCursor = null;
+    state.showAllPhotos = true;
+    state.totalPhotos ??= allPhotos.length;
+    renderPhotos(false);
+  } catch (error) {
+    if (error.status === 401) showAuthenticated(false);
+    elements.galleryMessage.textContent =
+      error.message || "Nicht alle Fotos konnten geladen werden.";
+  } finally {
+    state.loadingGallery = false;
+    elements.refreshButton.disabled = false;
+    updatePaginationControls();
   }
 }
 
@@ -632,6 +759,11 @@ elements.logoutButton.addEventListener("click", async () => {
   } finally {
     state.photos = [];
     state.queue = [];
+    state.totalPhotos = null;
+    state.nextCursor = null;
+    state.currentPage = 1;
+    state.showAllPhotos = false;
+    state.pageCache.clear();
     state.selectedPhotoIds.clear();
     renderQueue();
     showAuthenticated(false);
@@ -652,7 +784,13 @@ elements.clearQueueButton.addEventListener("click", () => {
   renderQueue();
 });
 elements.refreshButton.addEventListener("click", () => loadPhotos(true));
-elements.loadMoreButton.addEventListener("click", () => loadPhotos(false));
+elements.previousPageButton.addEventListener("click", () => {
+  loadGalleryPage(state.currentPage - 1);
+});
+elements.nextPageButton.addEventListener("click", () => {
+  loadGalleryPage(state.currentPage + 1);
+});
+elements.loadAllPhotosButton.addEventListener("click", loadAllPhotos);
 elements.selectAllPhotosButton.addEventListener("click", selectAllPhotos);
 elements.clearSelectionButton.addEventListener("click", clearPhotoSelection);
 elements.downloadSelectedButton.addEventListener("click", downloadSelectedPhotos);

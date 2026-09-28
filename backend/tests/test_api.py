@@ -34,6 +34,16 @@ def test_unauthenticated_gallery_access_is_rejected(client: TestClient) -> None:
     assert client.get("/api/photos").status_code == 401
 
 
+def test_photo_list_includes_total_count(
+    client: TestClient,
+    guest_session: dict[str, str],
+) -> None:
+    response = client.get("/api/photos", headers=guest_session)
+
+    assert response.status_code == 200
+    assert response.json()["total_count"] == 1
+
+
 def test_authenticated_config_comes_from_backend(
     client: TestClient,
     guest_session: dict[str, str],
@@ -66,6 +76,32 @@ def test_upload_url_is_generated_for_valid_image(
     assert payload["photo_id"].endswith(".jpg")
     assert payload["upload_url"] == "https://objects.invalid/signed-upload"
     assert fake_storage.upload_calls[0][1:] == ("Unser Foto.JPG", "image/jpeg")
+
+
+def test_upload_accepts_iphone_heic_mime_variants(
+    client: TestClient,
+    guest_session: dict[str, str],
+) -> None:
+    for content_type in (
+        "image/heic",
+        "image/heif",
+        "image/heic-sequence",
+        "image/heif-sequence",
+        "image/x-heic",
+        "image/x-heif",
+    ):
+        response = client.post(
+            "/api/photos/upload-url",
+            headers=guest_session,
+            json={
+                "filename": "iPhone-Foto.heic",
+                "content_type": content_type,
+                "size_bytes": 123_456,
+                "consent_confirmed": True,
+            },
+        )
+
+        assert response.status_code == 200
 
 
 def test_upload_rejects_invalid_file_type(

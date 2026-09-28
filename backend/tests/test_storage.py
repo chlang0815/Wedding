@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import zipfile
+from datetime import UTC, datetime
 from typing import Any
 
 import pytest
@@ -38,6 +39,19 @@ class ArchiveClient:
         return {}
 
 
+class ListingClient:
+    def __init__(self, responses: list[dict[str, Any]]) -> None:
+        self.responses = responses
+        self.list_calls: list[dict[str, Any]] = []
+
+    def list_objects_v2(self, **kwargs: Any) -> dict[str, Any]:
+        self.list_calls.append(kwargs)
+        return self.responses.pop(0)
+
+    def generate_presigned_url(self, operation: str, **kwargs: Any) -> str:
+        return "https://objects.invalid/signed-thumbnail"
+
+
 def test_upload_signature_contains_only_server_generated_key(settings) -> None:
     client = SigningClient()
     storage = S3PhotoStorage(settings, client=client)
@@ -65,6 +79,41 @@ def test_storage_keys_reject_unsafe_photo_ids(unsafe_id: str) -> None:
 
 def test_photo_id_validator_accepts_expected_shape() -> None:
     assert validate_photo_id(PHOTO_ID) == PHOTO_ID
+
+
+def test_first_photo_page_includes_total_count(settings) -> None:
+    second_photo_id = "r8000000000001-fedcba9876543210fedcba9876543210.png"
+    client = ListingClient(
+        [
+            {
+                "Contents": [
+                    {
+                        "Key": thumbnail_key(PHOTO_ID),
+                        "LastModified": datetime(2026, 9, 22, tzinfo=UTC),
+                    },
+                ],
+                "IsTruncated": True,
+                "NextContinuationToken": "next-page",
+            },
+            {
+                "Contents": [
+                    {
+                        "Key": thumbnail_key(second_photo_id),
+                        "LastModified": datetime(2026, 9, 23, tzinfo=UTC),
+                    },
+                ],
+                "IsTruncated": False,
+            },
+        ],
+    )
+    storage = S3PhotoStorage(settings, client=client)
+
+    page = storage.list_photos(limit=1)
+
+    assert len(page.photos) == 1
+    assert page.total_count == 2
+    assert page.next_cursor == PHOTO_ID
+    assert client.list_calls[1]["ContinuationToken"] == "next-page"
 
 
 def test_thumbnail_is_resized_and_contains_no_exif(settings) -> None:

@@ -7,8 +7,8 @@
     <meta name="referrer" content="no-referrer" />
     <meta name="theme-color" content="#003d20" />
     <title>J &amp; C · Hochzeitsfotos</title>
-    <link rel="stylesheet" href="../gallery.css?v=10" />
-    <script type="module" src="../gallery.js?v=8"></script>
+    <link rel="stylesheet" href="../gallery.css?v=12" />
+    <script type="module" src="../gallery.js?v=10"></script>
   </head>
   <body class="gallery-page">
     <div class="paper-grain" aria-hidden="true"></div>
@@ -66,7 +66,7 @@
           class="sr-only"
           id="photoInput"
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif,image/heic-sequence,image/heif-sequence,image/x-heic,image/x-heif,.heic,.heif"
           multiple
         />
 
@@ -129,7 +129,7 @@
             </div>
             <div class="section-heading__actions">
               <button class="text-button" id="selectAllPhotosButton" type="button">
-                Alle auswählen
+                Seite auswählen
               </button>
               <button class="text-button" id="refreshButton" type="button">Aktualisieren</button>
             </div>
@@ -146,9 +146,20 @@
             </div>
           </div>
           <div class="photo-grid" id="photoGrid"></div>
-          <button class="button button--secondary load-more" id="loadMoreButton" type="button" hidden>
-            Mehr Fotos laden
-          </button>
+          <div class="gallery-pagination" id="paginationControls" hidden>
+            <button class="button button--secondary" id="previousPageButton" type="button">
+              Zurück
+            </button>
+            <span class="gallery-pagination__status" id="pageIndicator" aria-live="polite">
+              Seite 1 von 1
+            </span>
+            <button class="button button--secondary" id="nextPageButton" type="button">
+              Weiter
+            </button>
+            <button class="text-button load-all-button" id="loadAllPhotosButton" type="button">
+              Alle Fotos laden
+            </button>
+          </div>
         </section>
 
       </div>

@@ -12,8 +12,22 @@ ALLOWED_UPLOADS: dict[str, tuple[str, ...]] = {
     "jpg": ("image/jpeg",),
     "png": ("image/png",),
     "webp": ("image/webp",),
-    "heic": ("image/heic", "image/heif"),
-    "heif": ("image/heif", "image/heic"),
+    "heic": (
+        "image/heic",
+        "image/heif",
+        "image/heic-sequence",
+        "image/heif-sequence",
+        "image/x-heic",
+        "image/x-heif",
+    ),
+    "heif": (
+        "image/heif",
+        "image/heic",
+        "image/heif-sequence",
+        "image/heic-sequence",
+        "image/x-heif",
+        "image/x-heic",
+    ),
 }
 PHOTO_ID_PATTERN = re.compile(
     r"^r\d{13}-[0-9a-f]{32}\.(?:jpg|png|webp|heic|heif)$",
@@ -85,6 +99,7 @@ class PhotoItem(BaseModel):
 class PhotoListResponse(BaseModel):
     photos: list[PhotoItem]
     next_cursor: str | None = None
+    total_count: int | None = Field(default=None, ge=0)
 
 
 class DownloadUrlResponse(BaseModel):

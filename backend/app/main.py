@@ -244,7 +244,11 @@ def create_app(
             except ValueError as error:
                 raise HTTPException(status_code=422, detail="Ungültiger Cursor.") from error
         page = storage.list_photos(limit or settings.gallery_page_size, cursor)
-        return PhotoListResponse(photos=page.photos, next_cursor=page.next_cursor)
+        return PhotoListResponse(
+            photos=page.photos,
+            next_cursor=page.next_cursor,
+            total_count=page.total_count,
+        )
 
     @app.get("/api/config", response_model=GalleryConfigResponse)
     def gallery_config(
@@ -368,7 +372,11 @@ def create_app(
             except ValueError as error:
                 raise HTTPException(status_code=422, detail="Ungültiger Cursor.") from error
         page = storage.list_photos(limit or settings.gallery_page_size, cursor)
-        return PhotoListResponse(photos=page.photos, next_cursor=page.next_cursor)
+        return PhotoListResponse(
+            photos=page.photos,
+            next_cursor=page.next_cursor,
+            total_count=page.total_count,
+        )
 
     @app.delete("/api/admin/photos/selection", response_model=DeleteResponse)
     def admin_delete_photo_selection(

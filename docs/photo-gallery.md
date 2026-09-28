@@ -130,7 +130,7 @@ kopiert werden.
 | `MAX_UPLOAD_SIZE` | maximales Original in Bytes, Standard 25 MiB |
 | `MAX_IMAGE_PIXELS` | Schutz gegen Dekompressionsbomben |
 | `THUMBNAIL_MAX_DIMENSION` | längste Thumbnail-Kante in Pixeln |
-| `GALLERY_PAGE_SIZE` | Fotos pro Listenantwort |
+| `GALLERY_PAGE_SIZE` | Fotos pro Listenantwort, Standard 50 |
 | `LOGIN_MAX_FAILURES` / `LOGIN_WINDOW_SECONDS` | In-Memory-Loginlimit |
 | `RETENTION_UNTIL` | sichtbares, dokumentiertes Löschdatum (`YYYY-MM-DD`) |
 

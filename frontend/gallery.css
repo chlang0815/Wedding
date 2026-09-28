@@ -52,6 +52,7 @@ label {
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
+select:focus-visible,
 label:has(input:focus-visible) {
   outline: 3px solid var(--gold);
   outline-offset: 3px;
@@ -738,9 +739,48 @@ progress::-moz-progress-bar {
   pointer-events: none;
 }
 
+.gallery-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.7rem 0.9rem;
+  margin: 1.5rem auto 0;
+}
+
 .load-more {
   display: flex;
   margin: 1.5rem auto 0;
+}
+
+.gallery-pagination__status {
+  min-width: 7.5rem;
+  color: rgba(24, 54, 44, 0.78);
+  font-weight: 600;
+  text-align: center;
+}
+
+.load-all-button {
+  flex-basis: 100%;
+  width: fit-content;
+  margin: 0.1rem auto 0;
+  padding: 0.25rem 0.1rem;
+  color: rgba(24, 54, 44, 0.7);
+  border: 0;
+  font-size: 0.86rem;
+  letter-spacing: 0.02em;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+.load-all-button:hover:not(:disabled) {
+  color: var(--green);
+}
+
+.load-all-button:disabled {
+  cursor: default;
+  opacity: 0.5;
 }
 
 .privacy-details {
@@ -1052,6 +1092,19 @@ progress::-moz-progress-bar {
   .photo-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.45rem;
+  }
+
+  .gallery-pagination {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+  }
+
+  .gallery-pagination .button {
+    padding-inline: 0.8rem;
+  }
+
+  .load-all-button {
+    grid-column: 1 / -1;
   }
 
   .photo-tile::after {

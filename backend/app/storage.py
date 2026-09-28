@@ -61,6 +61,7 @@ class UploadTarget:
 class PhotoPage:
     photos: list[PhotoItem]
     next_cursor: str | None
+    total_count: int | None = None
 
 
 class PhotoStorageProtocol(Protocol):
@@ -291,6 +292,7 @@ class S3PhotoStorage:
 
         try:
             response = self._client.list_objects_v2(**parameters)
+            total_count = self._count_photos(response) if cursor is None else None
         except ClientError as error:
             raise StorageError("object storage request failed") from error
 
@@ -320,7 +322,34 @@ class S3PhotoStorage:
         next_cursor = None
         if response.get("IsTruncated") and photos:
             next_cursor = photos[-1].id
-        return PhotoPage(photos=photos, next_cursor=next_cursor)
+        return PhotoPage(
+            photos=photos,
+            next_cursor=next_cursor,
+            total_count=total_count,
+        )
+
+    def _count_photos(self, first_page: dict[str, Any]) -> int:
+        response = first_page
+        total = 0
+
+        while True:
+            total += sum(
+                1
+                for item in response.get("Contents", [])
+                if THUMBNAIL_KEY_PATTERN.fullmatch(item.get("Key", ""))
+            )
+            if not response.get("IsTruncated"):
+                return total
+
+            continuation_token = response.get("NextContinuationToken")
+            if not continuation_token:
+                raise StorageError("object storage returned an incomplete photo listing")
+            response = self._client.list_objects_v2(
+                Bucket=self._bucket,
+                Prefix="thumbnails/",
+                MaxKeys=1000,
+                ContinuationToken=continuation_token,
+            )
 
     def create_download_url(self, photo_id: str, inline: bool = False) -> str:
         self._head_original(photo_id)

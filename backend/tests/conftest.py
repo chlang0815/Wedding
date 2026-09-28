@@ -65,6 +65,7 @@ class FakeStorage:
                 ),
             ],
             next_cursor=None,
+            total_count=1,
         )
 
     def create_download_url(self, photo_id: str, inline: bool = False) -> str:
